@@ -5,8 +5,6 @@
 
 library(tidyverse)
 
-library(ggplot2)
-
 ACORN_DATA <- read_csv("ACORN_DATA.csv")
 
 FBW_DATA <- read_csv("FBW_DATA.csv")
