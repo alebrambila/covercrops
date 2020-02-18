@@ -3,10 +3,6 @@
 
 ##General Data Frame##
 
-install.packages("tidyverse")
-
-install.packages("ggplot2")
-
 library(tidyverse)
 
 library(ggplot2)
