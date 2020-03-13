@@ -30,7 +30,15 @@ ggplot(data = infestedbaseline, aes(x = year)) +
   geom_line(aes(y = meanratio, color = treatment)) +
   geom_point(aes( y = meanratio, color = treatment)) +
   geom_errorbar(aes(ymin = (meanratio - se1), ymax = (meanratio + se1),
-  color = treatment))
+  color = treatment))+
+  labs(title = "Hog Grazing Effect on Infested Acorns",
+       subtitle = "(2018-19)",
+       caption = "Figure 6. The ratio of infested to healthy acorns in the oak woodland
+       in response to hog-grazing grazing (p= 0.046*)",
+       x = "Year",
+       y = "# Infested Acorns / Total # of Acorns",
+       colour = "Treatment")+
+  theme_classic()
 
 infestedbaseline1 <- ACORN_DATA %>%
   filter(time == "before") %>%
