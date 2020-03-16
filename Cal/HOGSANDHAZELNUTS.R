@@ -4,6 +4,7 @@
 ##General Data Frame##
 
 library(tidyverse)
+theme_set(theme_classic())
 
 ACORN_DATA <- read_csv("ACORN_DATA.csv")
 
