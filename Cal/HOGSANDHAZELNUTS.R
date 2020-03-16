@@ -39,7 +39,7 @@ ggplot(data = infestedbaseline, aes(x = year)) +
        x = "Year",
        y = "# Infested Acorns / Total # of Acorns",
        colour = "Treatment")+
-  theme_classic()
+      scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) )
 
 infestedbaseline1 <- ACORN_DATA %>%
   filter(time == "before") %>%
