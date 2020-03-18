@@ -4,11 +4,14 @@
 ##General Data Frame##
 
 library(tidyverse)
+library(gridExtra)
+library(egg)
 theme_set(theme_classic())
 
 ACORN_DATA <- read_csv("ACORN_DATA.csv")
 
 FBW_DATA <- read_csv("FBW_DATA.csv")
+
 
 calcSE <- function(x){
   x <- x[!is.na(x)]
@@ -17,38 +20,36 @@ calcSE <- function(x){
 ##Ratio of Infested Acorns Before and After Woodland Hog Grazing##
 
 infestedbaseline <- ACORN_DATA %>%
-  filter(time == "before") %>%
+  filter(time == "Before") %>%
   mutate( id = paste(oak, plot, sep = "")) %>%
   spread(type, count) %>%
   mutate(total = infested + other) %>%
   mutate(ratio = infested / total) %>%
-  group_by(year,treatment) %>%
+  group_by(year,Treatment) %>%
   summarise(meanratio = mean(ratio), se1 = calcSE(ratio))%>%
-  ungroup()#%>%
-  #mutate(year = as.factor(year))
+  ungroup()
 
-ggplot(data = infestedbaseline, aes(x = year)) +
-  geom_line(aes(y = meanratio, color = treatment)) +
-  geom_point(aes( y = meanratio, color = treatment)) +
+Proportion_Line <- ggplot(data = infestedbaseline, aes(x = year)) +
+  geom_line(aes(y = meanratio, color = Treatment), show.legend = FALSE) +
+  geom_point(aes( y = meanratio, color = Treatment), show.legend = FALSE) +
   geom_errorbar(aes(ymin = (meanratio - se1), ymax = (meanratio + se1),
-  color = treatment), width=.05)+
-  labs(title = "Hog Grazing Effect on Infested Acorns",
-       subtitle = "(2018-19)",
-       caption = "Figure 6. The ratio of infested to healthy acorns in the oak woodland
-       in response to hog-grazing grazing (p= 0.046*)",
-       x = "Year",
-       y = "# Infested Acorns / Total # of Acorns",
+  color = Treatment), width= 0.5, show.legend = FALSE) +
+  labs(caption = "(p= 0.046*)",
+       x = "Baseline",
+       y = "Proportion of Infested Acorns",
        colour = "Treatment")+
-      scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) )
+      scale_color_manual(values=c('#cb84e3','#9000bf'))+
+      scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) ) +
+  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
 
 infestedbaseline1 <- ACORN_DATA %>%
-  filter(time == "before") %>%
+  filter(time == "Before") %>%
   mutate( id = paste(oak, plot, sep = "")) %>%
   spread(type, count) %>%
   mutate(total = infested + other) %>%
   mutate(ratio = infested / total)
 
-infested_baseline.aov <- aov(ratio ~ treatment + year + treatment:year, data = infestedbaseline1)
+infested_baseline.aov <- aov(ratio ~ Treatment + year + Treatment:year, data = infestedbaseline1)
 
 summary(infested_baseline.aov)
 
@@ -58,54 +59,61 @@ infestedratio <- ACORN_DATA %>%
   filter(type == "infested") %>%
   mutate( id = paste(oak, plot, sep = "")) %>%
   spread(time, count) %>%
-  mutate(ratio2 = ((100* (after/ before))-100)) %>%
-  group_by(treatment) %>%
+  mutate(ratio2 = ((100* (After/ Before))-100)) %>%
+  group_by(Treatment) %>%
   mutate_all(~replace(., is.na(.), 0)) %>%
-  #summarise(meanratio2 = mean(ratio2), se2 = calcSE(ratio2))%>%
   ungroup() %>%
   mutate(ratio2 = ifelse(is.finite(ratio2), ratio2, 100))
 
-ggplot(data = infestedratio, aes(x = treatment)) +
-  geom_boxplot(mapping = aes( y = ratio2, color = treatment)) #+
-  #geom_point(aes( y = meanratio2, color = treatment)) +
-  #geom_errorbar(aes(ymin = (meanratio2 - se2), ymax = (meanratio2 + se2),
-  #color = treatment))
+Change <- infestedratio %>%
+  filter(Treatment == "Grazed")
 
-ggplot(data = infestedratio, aes(x = treatment)) +
-  geom_boxplot(mapping = aes( y = ratio2, color = treatment))+
+summary(Change)
+
+Change_Box <- ggplot(data = infestedratio, aes(x = Treatment)) +
+  geom_boxplot(mapping = aes( y = ratio2, color = Treatment), show.legend = FALSE) +
+  labs(caption = "(p= 1.04x10-5***)",
+       x = "Treatment",
+       y = "% Change",
+       colour = "Treatment")+
+      scale_color_manual(values=c('#cb84e3','#9000bf')) +
+      theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
+
+ggplot(data = infestedratio, aes(x = Treatment)) +
+  geom_boxplot(mapping = aes( y = ratio2, color = Treatment))+
   facet_wrap(~ year, nrow = 1)
 
-infested_ratio.aov <- aov(ratio2 ~ treatment + year + treatment:year, data = infestedratio)
+infested_ratio.aov <- aov(ratio2 ~ Treatment + year + Treatment:year, data = infestedratio)
 
 summary(infested_ratio.aov)
 
 ##FBW Emergence in Oak Woodland Before and After Treatment##
 
 oakemergence <- FBW_DATA %>%
-  filter(type == "emergence") %>%
-  filter(habitat == "oak") %>%
-  group_by(year, treatment) %>%
+  filter(type == "Emergence") %>%
+  filter(Habitat == "Oak") %>%
+  group_by(year, Treatment) %>%
   summarise(mean1 = mean(count), se3 = calcSE(count)) %>%
-  ungroup() #%>%
-  #mutate(year = as.factor(year))
-  
+  ungroup() 
 
-ggplot(data = oakemergence, aes(x = year)) +
-  geom_line(aes(y = mean1,  color = treatment)) +
-  #geom_boxplot(aes(y = mean1, color = treatment)) #+
-  geom_point(aes( y = mean1, color = treatment)) +
+Oak_Emerge_Line <- ggplot(data = oakemergence, aes(x = year), show.legend = FALSE) +
+  geom_line(aes(y = mean1,  color = Treatment), show.legend = FALSE) +
+  geom_point(aes( y = mean1, color = Treatment), show.legend = FALSE) +
   geom_errorbar(aes(ymin = (mean1 - se3), ymax = (mean1 + se3),
-                    color = treatment))
+                    color = Treatment), width= 0.5, show.legend = FALSE) +
+  labs(caption = "(p= 0.026*)",
+       x = "Emergence",
+       y = "Average # of FBW",
+       colour = "Treatment") +
+  scale_color_manual(values=c('#cb84e3','#9000bf')) +
+  scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) ) +
+  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
 
 oakemergence1 <- FBW_DATA %>%
-  filter(type == "emergence") %>%
-  filter(habitat == "oak") #%>%
-  #group_by(year, treatment) %>%
-  #summarise(mean1 = mean(count), se3 = calcSE(count)) %>%
-  #ungroup() #%>%
-#mutate(year = as.factor(year))
+  filter(type == "Emergence") %>%
+  filter(Habitat == "Oak") 
 
-oakemergence.aov <- aov(count ~ treatment + year + treatment:year, data = oakemergence1)
+oakemergence.aov <- aov(count ~ Treatment + year + Treatment:year, data = oakemergence1)
 
 summary(oakemergence.aov)
 
@@ -113,105 +121,87 @@ summary(oakemergence.aov)
 ##FBW Abundance in Oak Woodland Before and After Treatment##
   
 oakabundance <- FBW_DATA %>%
-    filter(type == "abundance") %>%
-    filter(habitat == "oak") %>%
-    group_by(year, treatment) %>%
+    filter(type == "Abundance") %>%
+    filter(Habitat == "Oak") %>%
+    group_by(year, Treatment) %>%
     summarise(mean2 = mean(count), se4 = calcSE(count)) %>%
-    ungroup() #%>%
-    #mutate(year = as.factor(year))
+    ungroup() 
   
-ggplot(data = oakabundance, aes(x = year)) +
-  geom_line(aes(y = mean2,  color = treatment)) +
-  #geom_boxplot(aes(y= mean2, color = treatment)) +
-  geom_point(aes( y = mean2, color = treatment)) +
+Oak_abund_Line <- ggplot(data = oakabundance, aes(x = year)) +
+  geom_line(aes(y = mean2,  color = Treatment), show.legend = FALSE) +
+  geom_point(aes( y = mean2, color = Treatment), show.legend = FALSE) +
   geom_errorbar(aes(ymin = (mean2 - se4), ymax = (mean2 + se4),
-                    color = treatment))
+                    color = Treatment, width= 0.5), show.legend = FALSE) +
+  labs(caption = "(p=0.54)",
+       x = "Abundance",
+       y = "Average # of FBW",
+       colour = "Treatment")+
+  scale_color_manual(values=c('#cb84e3','#9000bf')) +
+  scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) ) +
+  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = 0.5))
 
 oakabundance1 <- FBW_DATA %>%
-  filter(type == "abundance") %>%
-  filter(habitat == "oak")
+  filter(type == "Abundance") %>%
+  filter(Habitat == "Oak")
   
-ggplot(data = oakabundance1, aes(x = treatment)) +
-  geom_boxplot(mapping = aes( y = count, color = treatment))+
+ggplot(data = oakabundance1, aes(x = Treatment)) +
+  geom_boxplot(mapping = aes( y = count, color = Treatment))+
   facet_wrap(~ year, nrow = 1)
 
-oak_abundance.aov <- aov(count ~ treatment + year + treatment:year, data = oakabundance1)
+oak_abundance.aov <- aov(count ~ Treatment + year + Treatment:year, data = oakabundance1)
 
 summary(oak_abundance.aov)
 
 ##FBW Abundance in Hazelnuts Before and After Treatment##
   
 hazelnutabundance <- FBW_DATA %>%
-  filter(type == "abundance") %>%
-  filter(habitat == "hazelnut") %>%
-  group_by(year, treatment) %>%
+  filter(type == "Abundance") %>%
+  filter(Habitat == "Hazelnut") %>%
+  group_by(year, Treatment) %>%
   summarise(mean3 = mean(count), se5 = calcSE(count)) %>%
-  ungroup() #%>%
-  #mutate(year = as.factor(year))
+  ungroup()
 
-ggplot(hazelnutabundance, aes(x = year, y = mean3)) + 
-  geom_boxplot() +
-  #geom_line(aes(y = mean3,  color = treatment)) +
-  #geom_point(aes( y = mean3, color = treatment)) +
-  #geom_errorbar(aes(ymin = (mean3 - se5), ymax = (mean3 + se5),
-  #color = treatment)) #+
-  facet_wrap(~ treatment, nrow = 1)
+hazel_abund_Line <- ggplot(hazelnutabundance, aes(x = year, y = mean3)) + 
+  geom_line(aes(y = mean3,  color = Treatment)) +
+  geom_point(aes( y = mean3, color = Treatment), show.legend = FALSE) +
+  geom_errorbar(aes(ymin = (mean3 - se5), ymax = (mean3 + se5),
+  color = Treatment, width= 0.5), show.legend = FALSE) +
+  labs(caption = "(p=0.21)",
+       x = "Abundance",
+       y = "Average # of FBW",
+       colour = "Treatment")+
+  scale_color_manual(values=c('#94d0ff','#0076d1')) +
+  scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) ) +
+  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
+
+plot (hazel_abund_Line)
 
 hazelnutabundance1 <- FBW_DATA %>%
-  filter(type == "abundance") %>%
-  filter(habitat == "hazelnut")
+  filter(type == "Abundance") %>%
+  filter(Habitat == "Hazelnut")
 
-ggplot(data = hazelnutabundance1, aes(x = treatment)) +
-  geom_boxplot(mapping = aes( y = count, color = treatment))+
+ggplot(data = hazelnutabundance1, aes(x = Treatment)) +
+  geom_boxplot(mapping = aes( y = count, color = Treatment))+
   facet_wrap(~ year, nrow = 1)
 
-hazelnut_abundance.aov <- aov(count ~ treatment + year + treatment:year, data = hazelnutabundance1)
+hazelnut_abundance.aov <- aov(count ~ Treatment + year + Treatment:year, data = hazelnutabundance1)
 
 summary(hazelnut_abundance.aov)
 
-##ANOVA Ratio of Infested/Other Acorns##
+##Baseline FBW##
 
-ACORN_ANALYSIS1 <- read_csv("ACORN_DATA.csv") %>%
-  #filter(time == "before") %>%
-  mutate( id = paste(oak, plot, sep = "")) %>%
-  spread(type, count) %>%
-  mutate(total = infested + other) %>%
-  mutate(ratio = infested / total) %>%
-  mutate_all(~replace(., is.na(.), 0)) 
-  
-ggplot(data = ACORN_ANALYSIS1, aes(x = treatment)) +
-  geom_boxplot(mapping = aes( y = ratio, color = treatment))+
-  facet_wrap(~ year, nrow = 1)
 
-infested_ratio2.aov <- aov(ratio ~ treatment + year + treatment:year, data = ACORN_ANALYSIS1)
+ggplot(data = FBW_DATA, aes(x = Habitat)) +
+  geom_boxplot(mapping = aes( y = count, color = Habitat), show.legend = FALSE) +
+  labs(
+    x = NULL,
+    y = "# of FBW per trap",
+    colour = "habitat")+
+  scale_color_manual(values=c('#0076d1','#9000bf')) +
+  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5)) +
+  facet_wrap(vars(type))
 
-#summarySE(infested_ratio.aov, measurevar="len", groupvars=c("supp","dose"))
 
-summary(infested_ratio2.aov)
+##Panels##
+ggarrange(Change_Box, Proportion_Line, Oak_Emerge_Line, Oak_abund_Line,  ncol = 2, nrow = 2)
 
-ggplot(infested_ratio.aov, aes(x=treatment, y=ratio, colour=supp, group=supp)) + 
-  geom_errorbar(aes(ymin=len-ci, ymax=len+ci), colour="black", width=.1, position=pd) +
-  geom_line(position=pd) +
-  geom_point(position=pd, size=3)
-
-plot(infested_ratio.aov)
-
-ggplot(infested_ratio.aov, aes(x = am, y = hp)) +
-  geom_point() +
-  geom_bar(data = gd, stat = "identity", alpha = .3)
-
-ggplot(data = infested_ratio.aov, aes(x = treatment)) +
-  geom_bar()
-  #geom_line(aes(y = meanratio, color = treatment)) #+
-  #geom_point(aes( y = meanratio, color = treatment)) +
-  #geom_errorbar(aes(ymin = (meanratio - se1), ymax = (meanratio + se1),
-   #                 color = treatment))
-
-ACORN_ANALYSIS2 <- read_csv("ACORN_DATA.csv") %>%
-  #filter(time == "before") %>%
-  mutate( id = paste(oak, plot, sep = "")) %>%
-  spread(type, count)
-
-acorn1.aov <- aov(other ~ treatment+time, data = ACORN_ANALYSIS2)
-
-summary(acorn1.aov)
