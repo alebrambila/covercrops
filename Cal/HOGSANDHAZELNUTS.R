@@ -6,6 +6,7 @@
 library(tidyverse)
 library(gridExtra)
 library(egg)
+library(ggpubr)
 theme_set(theme_classic())
 
 ACORN_DATA <- read_csv("ACORN_DATA.csv")
