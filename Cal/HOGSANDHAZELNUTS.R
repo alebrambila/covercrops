@@ -30,7 +30,7 @@ infestedbaseline <- ACORN_DATA %>%
   ungroup()
 
 Proportion_Line <- ggplot(data = infestedbaseline, aes(x = year)) +
-  geom_line(aes(y = meanratio, color = Treatment), show.legend = FALSE) +
+  geom_line(aes(y = meanratio, color = Treatment)) +
   geom_point(aes( y = meanratio, color = Treatment), show.legend = FALSE) +
   geom_errorbar(aes(ymin = (meanratio - se1), ymax = (meanratio + se1),
   color = Treatment), width= 0.5, show.legend = FALSE) +
@@ -191,7 +191,7 @@ summary(hazelnut_abundance.aov)
 ##Baseline FBW##
 
 
-ggplot(data = FBW_DATA, aes(x = Habitat)) +
+Baseline <- ggplot(data = FBW_DATA, aes(x = Habitat)) +
   geom_boxplot(mapping = aes( y = count, color = Habitat), show.legend = FALSE) +
   labs(
     x = NULL,
@@ -202,6 +202,8 @@ ggplot(data = FBW_DATA, aes(x = Habitat)) +
   facet_wrap(vars(type))
 
 
+plot (Baseline)
+
 ##Panels##
-ggarrange(Change_Box, Proportion_Line, Oak_Emerge_Line, Oak_abund_Line,  ncol = 2, nrow = 2)
+ggarrange(Proportion_Line, Oak_Emerge_Line, Oak_abund_Line, hazel_abund_Line,  ncol = 2, nrow = 2)
 
