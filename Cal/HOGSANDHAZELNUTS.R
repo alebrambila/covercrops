@@ -7,6 +7,7 @@ library(tidyverse)
 library(gridExtra)
 library(egg)
 library(ggpubr)
+library(multcomp)
 theme_set(theme_classic())
 
 ACORN_DATA <- read_csv("ACORN_DATA.csv")
@@ -48,9 +49,12 @@ infestedbaseline1 <- ACORN_DATA %>%
   mutate( id = paste(oak, plot, sep = "")) %>%
   spread(type, count) %>%
   mutate(total = infested + other) %>%
-  mutate(ratio = infested / total)
+  mutate(ratio = infested / total)%>%
+  mutate(alltrt=as.factor(paste(Treatment, year)))
 
 infested_baseline.aov <- aov(ratio ~ Treatment + year + Treatment:year, data = infestedbaseline1)
+abaov<-aov(ratio~alltrt, infestedbaseline1)
+summary(glht(abaov, linfct=mcp(alltrt="Tukey")))
 
 summary(infested_baseline.aov)
 
