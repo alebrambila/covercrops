@@ -55,6 +55,15 @@ infestedbaseline1 <- ACORN_DATA %>%
 ib2<-subset(infestedbaseline1, Treatment=="Grazed")
 summary(aov(ratio~year, ib2))
 
+ib3<-ib2%>%
+  mutate(year=ifelse(year==2018, "a2018a", "a2019a"))%>%
+  dplyr::select(-alltrt, -total, -infested, -other)%>%
+  spread(year, ratio)%>%
+  group_by(id)%>%
+  mutate(diff=a2019a-a2018a)
+
+ggplot(ib3, aes(y=diff)) +geom_boxplot(aes(x=Treatment))+geom_point(aes(x=Treatment))
+
 infested_baseline.aov <- aov(ratio ~ Treatment + year + Treatment:year, data = infestedbaseline1)
 abaov<-aov(ratio~alltrt, infestedbaseline1)
 summary(glht(abaov, linfct=mcp(alltrt="Tukey")))
