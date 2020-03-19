@@ -52,11 +52,15 @@ infestedbaseline1 <- ACORN_DATA %>%
   mutate(ratio = infested / total)%>%
   mutate(alltrt=as.factor(paste(Treatment, year)))
 
+ib2<-subset(infestedbaseline1, Treatment=="Grazed")
+summary(aov(ratio~year, ib2))
+
 infested_baseline.aov <- aov(ratio ~ Treatment + year + Treatment:year, data = infestedbaseline1)
 abaov<-aov(ratio~alltrt, infestedbaseline1)
 summary(glht(abaov, linfct=mcp(alltrt="Tukey")))
 
 summary(infested_baseline.aov)
+summary(abaov)
 
 ##Percent Change in Infested Acorns Between Treatments##
 
