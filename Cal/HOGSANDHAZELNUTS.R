@@ -19,7 +19,8 @@ calcSE <- function(x){
   x <- x[!is.na(x)]
   sd(x)/sqrt(length(x))}
 
-##Ratio of Infested Acorns Before and After Woodland Hog Grazing##
+
+##Infested acorn change due to grazing##
 
 infestedbaseline <- ACORN_DATA %>%
   filter(time == "Before") %>%
@@ -31,47 +32,15 @@ infestedbaseline <- ACORN_DATA %>%
   summarise(meanratio = mean(ratio), se1 = calcSE(ratio))%>%
   ungroup()
 
-Proportion_Line <- ggplot(data = infestedbaseline, aes(x = year)) +
-  geom_line(aes(y = meanratio, color = Treatment)) +
-  geom_point(aes( y = meanratio, color = Treatment), show.legend = FALSE) +
-  geom_errorbar(aes(ymin = (meanratio - se1), ymax = (meanratio + se1),
-  color = Treatment), width= 0.5, show.legend = FALSE) +
-  labs(caption = "(p= 0.046*)",
-       x = "Baseline",
-       y = "Proportion of Infested Acorns",
-       colour = "Treatment")+
-      scale_color_manual(values=c('#cb84e3','#9000bf'))+
-      scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) ) +
-  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
-
-infestedbaseline1 <- ACORN_DATA %>%
-  filter(time == "Before") %>%
+infestedtotal <- ACORN_DATA %>%
   mutate( id = paste(oak, plot, sep = "")) %>%
   spread(type, count) %>%
-  mutate(total = infested + other) %>%
-  mutate(ratio = infested / total)%>%
-  mutate(alltrt=as.factor(paste(Treatment, year)))
-
-ib2<-subset(infestedbaseline1, Treatment=="Grazed")
-summary(aov(ratio~year, ib2))
-
-ib3<-ib2%>%
-  mutate(year=ifelse(year==2018, "a2018a", "a2019a"))%>%
-  dplyr::select(-alltrt, -total, -infested, -other)%>%
-  spread(year, ratio)%>%
-  group_by(id)%>%
-  mutate(diff=a2019a-a2018a)
-
-ggplot(ib3, aes(y=diff)) +geom_boxplot(aes(x=Treatment))+geom_point(aes(x=Treatment))
-
-infested_baseline.aov <- aov(ratio ~ Treatment + year + Treatment:year, data = infestedbaseline1)
-abaov<-aov(ratio~alltrt, infestedbaseline1)
-summary(glht(abaov, linfct=mcp(alltrt="Tukey")))
-
-summary(infested_baseline.aov)
-summary(abaov)
-
-##Percent Change in Infested Acorns Between Treatments##
+  dplyr::select(-other) %>%
+  group_by(year,Treatment, time) %>%
+  mutate(infested=infested*4)%>%
+  summarise(meaninfested = mean(infested), se1 = calcSE(infested))%>%
+  ungroup()
+infestedtotal$time <- factor(infestedtotal$time, levels = c("Before", "After"))
 
 infestedratio <- ACORN_DATA %>%
   filter(type == "infested") %>%
@@ -88,18 +57,84 @@ Change <- infestedratio %>%
 
 summary(Change)
 
+infested_baseline.aov <- aov(ratio ~ Treatment + year + Treatment:year, data = infestedbaseline1)
+abaov<-aov(ratio~alltrt, infestedbaseline1)
+summary(glht(abaov, linfct=mcp(alltrt="Tukey")))
+
+summary(infested_baseline.aov)
+summary(abaov)
+
+
+#infestedbaseline1 <- ACORN_DATA %>%
+#  filter(time == "Before") %>%
+#  mutate( id = paste(oak, plot, sep = "")) %>%
+#  spread(type, count) %>%
+#  mutate(total = infested + other) %>%
+#  mutate(ratio = infested / total)%>%
+#  mutate(alltrt=as.factor(paste(Treatment, year)))
+#
+#ib2<-subset(infestedbaseline1, Treatment=="Grazed")
+#summary(aov(ratio~year, ib2))
+#
+#ib3<-ib2%>%
+#  mutate(year=ifelse(year==2018, "a2018a", "a2019a"))%>%
+#  dplyr::select(-alltrt, -total, -infested, -other)%>%
+#  spread(year, ratio)%>%
+#  group_by(id)%>%
+#  mutate(diff=a2019a-a2018a)
+#
+#ggplot(ib3, aes(y=diff)) +geom_boxplot(aes(x=Treatment))+geom_point(aes(x=Treatment))
+
+
+#################### - THREE OPTIONS FOR FIGURE 2 - Effectiveness of Grazing ####################
+
+### FIGURE 2.(v1) Proportion of infested acorns before grazing each year.
+      # This figure shows how there was initially a higher proportion of infested acorns in the grazed plot than the paired control plot
+      # but the following year, the pre-grazed infestation rate was lowered to be indistinguishable from the paired control plot
+Proportion_Line <- ggplot(data = infestedbaseline, aes(x = year)) +
+  geom_line(aes(y = meanratio, color = Treatment)) +
+  geom_point(aes( y = meanratio, color = Treatment), show.legend = FALSE) +
+  geom_errorbar(aes(ymin = (meanratio - se1), ymax = (meanratio + se1),
+  color = Treatment), width= 0.5, show.legend = FALSE) +
+  labs(caption = "(p= 0.046*)",
+       x = "Baseline",
+       y = "Proportion of Infested Acorns",
+       colour = "Treatment")+
+      scale_color_manual(values=c('#cb84e3','#9000bf'))+
+      scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) ) +
+  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))+
+  annotate("text", x=2018, y= .65, label="*")+annotate("text", x=2018.5, y= .44, label="*", color='#9000bf') 
+
+### FIGURE 2. (v2) Number of infested acorns before and after grazing each year
+      # The only change is now we see the infested acorn total, rather than proportion infested
+infested.total.plot <- ggplot(data = infestedtotal, aes(x = time, group=Treatment)) +
+  stat_summary(fun.y=sum, aes(y=meaninfested, color=Treatment), geom="line")+
+  geom_point(aes( y = meaninfested, color = Treatment), show.legend = FALSE) +
+  geom_errorbar(aes(ymin = (meaninfested - se1), ymax = (meaninfested + se1),
+                    color = Treatment), width= 0.5, show.legend = FALSE) +
+  labs(caption = "(p= 0.046*)",
+       x = "Time relative to grazing",
+       y = "Number of infested acorns / m2",
+       colour = "Treatment")+
+  facet_wrap(~year)+
+ scale_color_manual(values=c('#cb84e3','#9000bf'))+
+  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))+
+  annotate("text", x=1.5, y= 17, label="*", color='#9000bf') 
+
+### FIGURE 2 (v3)
+# This third option shows relative percent change in the number of infested nuts in grazed vs. ungrazed plots, 
+#  averaged across 2018 and 2019
 Change_Box <- ggplot(data = infestedratio, aes(x = Treatment)) +
   geom_boxplot(mapping = aes( y = ratio2, color = Treatment), show.legend = FALSE) +
-  labs(caption = "(p= 1.04x10-5***)",
-       x = "Treatment",
-       y = "% Change",
-       colour = "Treatment")+
-      scale_color_manual(values=c('#cb84e3','#9000bf')) +
-      theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
+  labs(
+    x = "",
+    y = "% Change in infested nuts before and after grazing",
+    colour = "Treatment")+
+  scale_color_manual(values=c('#cb84e3','#9000bf')) +
+  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))+
+  annotate("text", x=1.5, y= 200, label="p=1.04x10^-5") 
 
-ggplot(data = infestedratio, aes(x = Treatment)) +
-  geom_boxplot(mapping = aes( y = ratio2, color = Treatment))+
-  facet_wrap(~ year, nrow = 1)
+
 
 infested_ratio.aov <- aov(ratio2 ~ Treatment + year + Treatment:year, data = infestedratio)
 
