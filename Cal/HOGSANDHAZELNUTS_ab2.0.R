@@ -85,20 +85,6 @@ f1<-ggplot(baselines, aes(y=count, x=Habitat)) +
 
 plot(f1)
 
-##Acorn totals
-
-acorn_total <- ACORN_DATA%>%
-  filter(time == "Before") %>%
-  mutate( id = paste(oak, plot, sep = "")) %>%
-  spread(type, count) %>%
-  mutate(total = infested + other) %>%
-  mutate(alltrt=as.factor(paste(Treatment, year)))
-
-ggplot(acorn_total, aes(x= Treatment, y = total)) +
-  geom_boxplot(aes(fill=Treatment)) +
-  facet_wrap(~year)+
-  scale_fill_manual(values=c('darkorange','#9a00bd'))
-
 
 #################### - THREE OPTIONS FOR FIGURE 2 - Effectiveness of Grazing ####################
 
@@ -113,7 +99,7 @@ f2v1 <- ggplot(data = infestedbaseline, aes(x = year), show.legend = FALSE) +
   labs( x = "",
         y = "Proportion of Infested Acorns",
         colour = "Treatment")+
-  scale_color_manual(values=c('darkorange','#9a00bd'))+
+  scale_color_manual(values=c('#e46eff','#9a00bd'))+
   scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) ) +
   theme(legend.position="right", legend.title = element_blank(), plot.caption = element_text(hjust = .5))+
   annotate("text", x=2018.66, y= .5, label="* P=0.065", color='#9000bf') 
@@ -132,8 +118,9 @@ f2v2 <- ggplot(data = infestedtotal, aes(x = time, group=Treatment)) +
        y = "# of infested acorns / m^2",
        colour = "Treatment")+
   facet_wrap(~year)+
-  scale_color_manual(values=c('darkorange','#9a00bd'))+
-  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
+  scale_color_manual(values=c('#e46eff','#9a00bd'))+
+  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))+
+  annotate("text", x=1.5, y= 17, label="*", color='#9000bf') 
 
 plot(f2v2)
 
@@ -194,11 +181,11 @@ f3a <- ggplot(data = oakemergence, aes(x = year), show.legend = FALSE) +
     x = "Emergence",
     y = "# of FBW",
     colour = "Treatment") +
-  scale_color_manual(values=c('darkorange','#9a00bd')) +
+  scale_color_manual(values=c('#e46eff','#9a00bd')) +
   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) )+
-  annotate("text", x=2018.3, y= 1.2, label="** P=0.004", color='darkorange') +
-  annotate("text", x=2018.7, y= .7, label=" ** P<0.001") +
-  annotate("text", x=2019.7, y= 1.2, label=" ** P<0.001", color='darkorange')
+  annotate("text", x=2018.3, y= 1.2, label="** P=0.004", color='#cb84e3') +
+  annotate("text", x=2018.4, y= .44, label=" P=0.99", color='#9000bf')+
+  annotate("text", x=2018.7, y= .7, label=" ** P<0.001")
 
 f3b <- ggplot(data = oakabundance, aes(x = year)) +
   geom_line(aes(y = mean2,  color = Treatment), show.legend = FALSE) +
@@ -208,7 +195,7 @@ f3b <- ggplot(data = oakabundance, aes(x = year)) +
   labs(y="",
        x = "Abundance",
        colour = "Treatment")+
-  scale_color_manual(values=c('darkorange','#9a00bd')) +
+  scale_color_manual(values=c('#e46eff','#9a00bd')) +
   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) )
 
 
@@ -327,12 +314,12 @@ veg1<-veg%>%
 
 ggplot(subset(veg1, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"), aes(timing, meancover)) +
   #geom_boxplot(aes(fill=pig))+
-  stat_summary(aes(timing, meancover, group=pig, color=pig), fun.y=median, geom="line", show.legend = FALSE)+
+  stat_summary(aes(timing, meancover, group=pig, color=pig), fun.y=median, geom="line")+
   geom_errorbar(aes(ymin = (meancover-secover), ymax = (meancover+secover),
                     color = pig), width= 0.05, show.legend = FALSE)+facet_wrap(~vegtype)+xlab("Year")+ylab("Percent Cover")+
   scale_x_continuous(breaks=c(2018, 2020), limits=c(2017.75, 2020.25) )+
-  scale_color_manual(values=c('darkorange','#9a00bd'))
-
+  scale_color_manual(values=c('#e46eff','#9a00bd'))
+  
 vegaov<-aov(cover~timing*pig, subset(veg, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"))
 summary(glht(vegaov, linfct=mcp(alltrt="Tukey")))
 
