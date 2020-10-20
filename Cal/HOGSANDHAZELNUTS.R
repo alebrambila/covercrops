@@ -160,7 +160,7 @@ oakemergence <- FBW_DATA %>%
   group_by(year, Treatment) %>%
   summarise(mean1 = mean(count), se3 = calcSE(count)) %>%
   ungroup() 
-oakabundance <- FBW_DATA %>%
+oakabundance <- filter(FBW_DATA, !is.na(count)) %>%
   filter(type == "Abundance") %>%
   filter(Habitat == "Oak") %>%
   group_by(year, Treatment) %>%
@@ -279,3 +279,76 @@ ggplot(oakabundance1, aes(x=alltrt, y=count)) + geom_boxplot()
 #hazelnut_abundance.aov <- aov(count ~ Treatment + year + Treatment:year, data = hazelnutabundance1)
 
 #summary(hazelnut_abundance.aov)
+
+
+### VEGVEG ###
+
+veg<-read_csv("vegcov.csv")%>%
+  dplyr::select(1, 3, 4,5, 6, 7 )%>%
+  group_by(timing, pig, transect, meter, vegtype)%>%
+  summarize(cover=sum(coverest))
+veg$timing <- factor(veg$timing, levels=c("B", "A", "2020"))
+
+veg0<-veg%>%
+  group_by(pig, timing, vegtype)%>%
+  summarize(meancover=mean(cover), secover=calcSE(cover))%>%
+  group_by(timing, vegtype)%>%
+  mutate(secover=mean(secover))%>%
+  spread(pig, meancover, fill=0)%>%
+  mutate(diff=P-NP)
+
+veg1<-veg%>%
+  group_by(timing, vegtype, pig)%>%
+  summarize(meancover=mean(cover), secover=calcSE(cover))%>%
+  ungroup()%>%
+  mutate(vegtype=ifelse(vegtype=="ground substrate", "bare ground", ifelse(vegtype=="invasive vine", "introduced shrub", vegtype)))%>%
+  filter(timing!="A")%>%
+  mutate(timing=as.integer(ifelse(timing=="B", 2018, 2020)))
+
+
+
+#ggplot(subset(veg, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"), aes(timing, cover)) +
+#  geom_boxplot(aes(fill=pig))+
+#  stat_summary(aes(timing, cover, group=pig, color=pig), fun.y=median, geom="line")+
+#  facet_wrap(~vegtype, scales="free")
+
+ggplot(subset(veg1, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"), aes(timing, meancover)) +
+  #geom_boxplot(aes(fill=pig))+
+  stat_summary(aes(timing, meancover, group=pig, color=pig), fun.y=median, geom="line")+
+  geom_errorbar(aes(ymin = (meancover-secover), ymax = (meancover+secover),
+                    color = pig), width= 0.05, show.legend = FALSE)+facet_wrap(~vegtype)+xlab("Year")+ylab("Percent Cover")+
+  scale_x_continuous(breaks=c(2018, 2020), limits=c(2017.75, 2020.25) )+
+  scale_color_manual(values=c('#e46eff','#9a00bd'))
+
+vegaov<-aov(cover~timing*pig, subset(veg, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"))
+summary(glht(vegaov, linfct=mcp(alltrt="Tukey")))
+
+library(nlme)
+veglme<-lme(cover~timing*pig, random=~1|meter/transect, subset(veg, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"))
+summary(veglme)
+
+vegintshrub<-lme(cover~timing*pig, random=~1|meter/transect, subset(veg, vegtype=="invasive vine"&timing!="A"))
+summary(vegintshrub)
+## overall difference, but no interaction effect
+
+vegbg<-lme(cover~timing*pig, random=~1|meter/transect, subset(veg, vegtype=="ground substrate"&timing!="A"))
+summary(vegbg)
+## same
+
+vegherb<-lme(cover~timing*pig, random=~1|meter/transect, subset(veg, vegtype=="herbaceous/litter"&timing!="A"))
+summary(vegherb)
+##only timing
+
+vegns<-lme(cover~timing*pig, random=~1|meter/transect, subset(veg, vegtype=="native shrub"&timing!="A"))
+summary(vegns)
+## neither, only timing
+
+
+#ggplot(subset(veg0, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"), aes(timing, diff)) +
+#  #geom_boxplot(aes(fill=pig))+
+#  stat_summary(aes(timing, diff, group=vegtype, color=vegtype), fun.y=median, geom="line")+
+#  geom_errorbar(aes(ymin = (diff-secover), ymax = (diff+secover),
+#                        color = vegtype), width= 0.05, show.legend = FALSE)+ylab("grazing impact on % cover")+
+#  geom_hline(yintercept=0)
+
+
