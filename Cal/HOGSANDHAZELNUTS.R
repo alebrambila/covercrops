@@ -41,6 +41,8 @@ infestedbaseline <- ACORN_DATA %>%
   mutate(total = infested + other) %>%
   mutate(ratio = infested / total) %>%
   group_by(year,Treatment) %>%
+  mutate_all(~replace(., is.na(.), 0)) %>%
+  mutate(ratio = ifelse(is.finite(ratio), ratio, 100)) %>%
   summarise(meanratio = mean(ratio), se1 = calcSE(ratio))%>%
   ungroup()
 
@@ -144,7 +146,7 @@ f2v1 <- ggplot(data = infestedbaseline, aes(x = year), show.legend = FALSE) +
         y = "Proportion of Infested Acorns",
         colour = "Treatment")+
   scale_color_manual(values=c('darkorange','#9a00bd'))+
-  scale_x_continuous(breaks=c(2018, 2019), limits=c(2017.75, 2019.25) ) +
+  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) ) +
   theme(legend.position="right", legend.title = element_blank(), plot.caption = element_text(hjust = .5))+
   annotate("text", x=2018.66, y= .5, label="* P=0.065", color='#9000bf') 
 
