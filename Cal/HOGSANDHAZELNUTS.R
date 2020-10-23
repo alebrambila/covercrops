@@ -1,6 +1,7 @@
 ##Hogs and Hazelnuts##
 ##Calvin Penkauskas, Winter 2020##
 
+
 ##General Data Frame##
 
 library(tidyverse)
@@ -8,7 +9,18 @@ library(gridExtra)
 library(egg)
 library(ggpubr)
 library(multcomp)
-theme_set(theme_classic())
+library(cowplot)
+library(grid)
+
+# Set a theme
+# theme_set(theme_classic())
+theme_set(theme_cowplot() + theme(strip.background = element_blank(), 
+          text = element_text(size = 18), 
+          axis.text = element_text(size = 16),
+          strip.text = element_text(size = 18)))
+
+
+
 
 ACORN_DATA <- read_csv("ACORN_DATA.csv")
 
@@ -84,6 +96,24 @@ f1<-ggplot(baselines, aes(y=count, x=Habitat)) +
   theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
 
 plot(f1)
+
+## fig 1 reformatted
+f1v2 <- ggplot(baselines, aes(y=count, x=Habitat)) +
+  geom_boxplot(fill = "lightgrey")+
+  facet_wrap(~type, scale = "free")+
+  labs(y = "Number of filbertworms per trap") + panel_border() 
+
+
+pdf("fig1_baseline-distribution.pdf", width = 8, height = 5)
+
+f1v2
+
+# add panel labels
+grid.text(c("(a)", "(b)"),x = c(.12,.58),
+          y = c(.88,.88),
+          gp=gpar(fontsize=18)) 
+dev.off()
+
 
 ##Acorn totals
 
@@ -185,47 +215,76 @@ oakabundance <- filter(FBW_DATA, !is.na(count)) %>%
 # but the following year, the pre-grazed infestation rate was lowered to be indist
 
 
-f3a <- ggplot(data = oakemergence, aes(x = year), show.legend = FALSE) +
-  geom_line(aes(y = mean1,  color = Treatment), show.legend = FALSE) +
-  geom_point(aes( y = mean1, color = Treatment), show.legend = FALSE) +
-  geom_errorbar(aes(ymin = (mean1 - se3), ymax = (mean1 + se3),
-                    color = Treatment), width= 0.5, show.legend = FALSE) +
-  labs(
-    x = "Emergence",
-    y = "# of FBW",
-    colour = "Treatment") +
-  scale_color_manual(values=c('darkorange','#9a00bd')) +
-  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) )+
-  annotate("text", x=2018.3, y= 1.2, label="** P=0.004", color='darkorange') +
-  annotate("text", x=2018.7, y= .7, label=" ** P<0.001") +
-  annotate("text", x=2019.7, y= 1.2, label=" ** P<0.001", color='darkorange')
 
-f3b <- ggplot(data = oakabundance, aes(x = year)) +
-  geom_line(aes(y = mean2,  color = Treatment), show.legend = FALSE) +
-  geom_point(aes( y = mean2, color = Treatment), show.legend = FALSE) +
-  geom_errorbar(aes(ymin = (mean2 - se4), ymax = (mean2 + se4),
-                    color = Treatment, width= 0.5), show.legend = FALSE) +
-  labs(y="",
-       x = "Abundance",
-       colour = "Treatment")+
-  scale_color_manual(values=c('darkorange','#9a00bd')) +
-  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) )
+emergeabund <- FBW_DATA %>%
+  filter(Habitat == "Oak") %>%
+  group_by(year, Treatment, type) %>%
+  summarise(mean1 = mean(count), se3 = calcSE(count)) %>%
+  ungroup() %>%
+  mutate(type = factor(type, levels = c("Emergence", "Abundance")))
 
 
-oakemergence1 <- FBW_DATA %>%
-  filter(type == "Emergence") %>%
-  filter(Habitat == "Oak") 
+fig3v2 <- ggplot(emergeabund, aes(x=year, y = mean1, color = Treatment)) + geom_line(lwd = .6) + geom_point(size = 2)+
+  geom_errorbar(aes(ymin = (mean1 - se3), ymax = (mean1 + se3)), width= 0.2) +
+  labs( x = "Year",
+    y = "Number of filbertworms per trap") +
+  facet_wrap(~type, scales = "free") + theme(legend.position = "none") +
+  scale_color_manual(values=c('grey80','grey30')) +
+  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25)) + panel_border() 
 
-oakabundance1 <- FBW_DATA %>%
-  filter(type == "Abundance") %>%
-  filter(Habitat == "Oak")
+pdf("fig3_treatment-effects.pdf", width = 8, height = 5)
 
-ggplot(data = oakemergence1, aes(x = Treatment)) +
-  geom_boxplot(mapping = aes( y = count, color = Treatment))+
-  facet_wrap(~ year, nrow = 1)
+fig3v2
 
-## Figure 3 Panel arrange##
-ggarrange(f3a, f3b, common.legend = T)
+# add panel labels
+grid.text(c("(a)", "(b)"),x = c(.13,.6),
+          y = c(.88,.88),
+          gp=gpar(fontsize=18)) 
+dev.off()
+
+
+# OLD FIGURE CODE
+# f3a <- ggplot(data = oakemergence, aes(x = year), show.legend = FALSE) +
+#   geom_line(aes(y = mean1,  color = Treatment), show.legend = FALSE) +
+#   geom_point(aes( y = mean1, color = Treatment), show.legend = FALSE) +
+#   geom_errorbar(aes(ymin = (mean1 - se3), ymax = (mean1 + se3),
+#                     color = Treatment), width= 0.2, show.legend = FALSE) +
+#   labs( x = "Emergence",
+#     y = "Number of filbertworms per trap",
+#     colour = "Treatment") +
+#   scale_color_manual(values=c('grey80','grey30')) +
+#   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) ) #+
+# #  annotate("text", x=2018.3, y= 1.2, label="** P=0.004", color='darkorange') +
+# #  annotate("text", x=2018.7, y= .7, label=" ** P<0.001") +
+# #  annotate("text", x=2019.7, y= 1.2, label=" ** P<0.001", color='darkorange')
+# 
+# f3b <- ggplot(data = oakabundance, aes(x = year)) +
+#   geom_line(aes(y = mean2,  color = Treatment), show.legend = FALSE) +
+#   geom_point(aes( y = mean2, color = Treatment), show.legend = FALSE) +
+#   geom_errorbar(aes(ymin = (mean2 - se4), ymax = (mean2 + se4),
+#                     color = Treatment, width= 0.2), show.legend = FALSE) +
+#   labs(y="",
+#        x = "Abundance",
+#        colour = "Treatment")+
+#   scale_color_manual(values=c('grey80','grey30')) +
+#   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) )
+# 
+# ## Figure 3 Panel arrange##
+# ggarrange(f3a, f3b, common.legend = T)
+# 
+# oakemergence1 <- FBW_DATA %>%
+#   filter(type == "Emergence") %>%
+#   filter(Habitat == "Oak") 
+# 
+# oakabundance1 <- FBW_DATA %>%
+#   filter(type == "Abundance") %>%
+#   filter(Habitat == "Oak")
+# 
+# ggplot(data = oakemergence1, aes(x = Treatment)) +
+#   geom_boxplot(mapping = aes( y = count, color = Treatment))+
+#   facet_wrap(~ year, nrow = 1)
+
+
 
 
 ## Figure 3 Stats: 
