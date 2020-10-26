@@ -79,6 +79,12 @@ infestedbaseline1 <- ACORN_DATA %>%
   mutate(ratio = infested / total)%>%
   mutate(alltrt=as.factor(paste(Treatment, year)))
 
+infestedbaseline2<-infestedbaseline1%>%
+  group_by(year,Treatment) %>%
+  filter(!is.na(ratio))%>%
+  summarise(meanratio = mean(ratio), se1 = calcSE(ratio))%>%
+  ungroup()
+
 #################### - FIGURE 1 - Hazelnut and Oak Populations ####################
 
 ## Averaged across years to show that they are present in oaks and hazelnuts generally, 
@@ -137,37 +143,41 @@ ggplot(acorn_total, aes(x= Treatment, y = total)) +
 ### FIGURE 2.(v1) Proportion of infested acorns before grazing each year.
 # This figure shows how there was initially a higher proportion of infested acorns in the grazed plot than the paired control plot
 # but the following year, the pre-grazed infestation rate was lowered to be indistinguishable from the paired control plot
-f2v1 <- ggplot(data = infestedbaseline, aes(x = year), show.legend = FALSE) +
-  geom_line(aes(y = meanratio, color = Treatment), show.legend = FALSE) +
-  geom_point(aes( y = meanratio, color = Treatment), show.legend = FALSE) +
+f2a <- ggplot(data = infestedbaseline2, aes(x = year), show.legend = FALSE) +
+  geom_line(aes(y = meanratio, color = Treatment), show.legend = FALSE, lwd = .6) +
+  geom_point(aes( y = meanratio, color = Treatment), show.legend = FALSE, size=2) +
   geom_errorbar(aes(ymin = (meanratio - se1), ymax = (meanratio + se1),
-                    color = Treatment), width= 0.5, show.legend = FALSE) +
+                    color = Treatment), width= 0.2, show.legend = FALSE) +
   labs( x = "",
         y = "Proportion of Infested Acorns",
         colour = "Treatment")+
-  scale_color_manual(values=c('darkorange','#9a00bd'))+
+  scale_color_manual(values=c('grey80','grey30'))+
   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) ) +
   theme(legend.position="right", legend.title = element_blank(), plot.caption = element_text(hjust = .5))+
-  annotate("text", x=2018.66, y= .5, label="* P=0.065", color='#9000bf') 
+  #annotate("text", x=2018.66, y= .5, label="* P=0.065", color='grey30') 
 
-plot(f2v1)
+plot(f2a)
 
 ### FIGURE 2. (v2) Number of infested acorns before and after grazing each year
 # The only change is now we see the infested acorn total, rather than proportion infested
-f2v2 <- ggplot(data = infestedtotal, aes(x = time, group=Treatment)) +
-  stat_summary(fun.y=sum, aes(y=meaninfested, color=Treatment), geom="line")+
-  geom_point(aes( y = meaninfested, color = Treatment), show.legend = FALSE) +
+f2b <- ggplot(data = infestedtotal, aes(x = time, group=Treatment)) +
+  stat_summary(fun.y=sum, aes(y=meaninfested, color=Treatment), geom="line", lwd=.6)+
+  geom_point(aes( y = meaninfested, color = Treatment), show.legend = FALSE, size=2) +
   geom_errorbar(aes(ymin = (meaninfested - se1), ymax = (meaninfested + se1),
-                    color = Treatment), width= 0.5, show.legend = FALSE) +
-  labs(caption = "(p= 0.046*)",
+                    color = Treatment), width= 0.2, show.legend = FALSE) +
+  labs(
        x = "Time relative to grazing",
        y = "# of infested acorns / m^2",
        colour = "Treatment")+
   facet_wrap(~year)+
-  scale_color_manual(values=c('darkorange','#9a00bd'))+
-  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
+  scale_color_manual(values=c('grey80','grey30'))+
+  theme(legend.position="none", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
 
-plot(f2v2)
+plot(f2b)
+
+
+
+ggarrange(f2b, f2a, nrow=2, ncol=1, common.legend = T, legend=F)
 
 ### FIGURE 2 (v3)
 # This third option shows relative percent change in the number of infested nuts in grazed vs. ungrazed plots, 
