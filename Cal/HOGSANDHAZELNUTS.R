@@ -137,6 +137,19 @@ ggplot(acorn_total, aes(x= Treatment, y = total)) +
   facet_wrap(~year)+
   scale_fill_manual(values=c('darkorange','#9a00bd'))
 
+acorn_summed <- acorn_total %>%
+  group_by(year, Treatment) %>%
+  summarize(meanacorn = mean(total), seacorn = calcSE(total))
+  
+ggplot(acorn_summed, aes(x = year, y = meanacorn, color = Treatment)) + geom_point() + geom_line() +
+  scale_color_manual(values=c('grey80','grey30')) +
+  geom_errorbar(aes(ymin = meanacorn - seacorn, ymax = meanacorn + seacorn), width = .2) +
+  labs(x = "Year", y = expression(paste("Acorns per m"^2))) + theme(legend.position = "none") +
+  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) ) +   panel_border() 
+
+ggsave("SupFig-acornsovertime.pdf", width = 5, height = 4)
+
+
 
 #################### - THREE OPTIONS FOR FIGURE 2 - Effectiveness of Grazing ####################
 
@@ -153,7 +166,7 @@ f2a <- ggplot(data = infestedbaseline2, aes(x = year), show.legend = FALSE) +
         colour = "Treatment")+
   scale_color_manual(values=c('grey80','grey30'))+
   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) ) +
-  theme(legend.position="right", legend.title = element_blank(), plot.caption = element_text(hjust = .5))+
+  theme(legend.position="right", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
   #annotate("text", x=2018.66, y= .5, label="* P=0.065", color='grey30') 
 
 plot(f2a)
@@ -174,6 +187,31 @@ f2b <- ggplot(data = infestedtotal, aes(x = time, group=Treatment)) +
   theme(legend.position="none", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
 
 plot(f2b)
+
+f2v3 <- ggplot(data = subset(infestedtotal, year != 2020), aes(x = time, y = meaninfested, color=Treatment, group=Treatment)) +
+#  stat_summary(fun.y=sum, aes(y=meaninfested, color=Treatment), geom="line", lwd=.6)+
+  geom_line(lwd = .6) + 
+  geom_point(aes( y = meaninfested, color = Treatment), show.legend = FALSE, size=2) +
+  geom_errorbar(aes(ymin = (meaninfested - se1), ymax = (meaninfested + se1),
+                    color = Treatment), width= 0.2, show.legend = FALSE) +
+  labs(
+    x = "Time relative to grazing",
+    y = expression(paste("Number of infested acorns per m"^2))) +
+  facet_wrap(~year)+
+  scale_color_manual(values=c('grey80','grey30'))+
+  theme(legend.position="none", legend.title = element_blank(), plot.caption = element_text(hjust = .5)) +
+  panel_border() 
+
+pdf("fig2_grazingeffectonacorns.pdf", width = 8, height = 5)
+
+f2v3
+
+# add panel labels
+grid.text(c("(a)", "(b)"),x = c(.14,.59),
+          y = c(.88,.88),
+          gp=gpar(fontsize=18)) 
+dev.off()
+
 
 
 
@@ -396,13 +434,28 @@ veg1<-veg%>%
 #  stat_summary(aes(timing, cover, group=pig, color=pig), fun.y=median, geom="line")+
 #  facet_wrap(~vegtype, scales="free")
 
-ggplot(subset(veg1, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"), aes(timing, meancover)) +
+fig4 <- ggplot(subset(veg1, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"), aes(timing, meancover, color = pig)) +
   #geom_boxplot(aes(fill=pig))+
-  stat_summary(aes(timing, meancover, group=pig, color=pig), fun.y=median, geom="line", show.legend = FALSE)+
+  stat_summary(aes(timing, meancover, group=pig, color=pig), 
+               fun.y=median, geom="line", show.legend = FALSE, lwd = .6) +
+  geom_point(size = 2) +
   geom_errorbar(aes(ymin = (meancover-secover), ymax = (meancover+secover),
-                    color = pig), width= 0.05, show.legend = FALSE)+facet_wrap(~vegtype)+xlab("Year")+ylab("Percent Cover")+
+                    color = pig), width= 0.2, show.legend = FALSE)+facet_wrap(~vegtype)+xlab("Year")+ylab("Percent Cover")+
   scale_x_continuous(breaks=c(2018, 2020), limits=c(2017.75, 2020.25) )+
-  scale_color_manual(values=c('darkorange','#9a00bd'))
+  theme(legend.position = "none") +
+  scale_color_manual(values=c('grey80','grey30')) + panel_border() 
+
+pdf("fig4_vegetation.pdf", width = 8, height = 8)
+
+fig4
+
+# add panel labels
+grid.text(c("(a)", "(b)", "(c)", "(d)"),x = c(.14,.59, .14,.59),
+          y = c(.92,.92, .46, .46),
+          gp=gpar(fontsize=18)) 
+dev.off()
+
+
 
 vegaov<-aov(cover~timing*pig, subset(veg, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"))
 summary(glht(vegaov, linfct=mcp(alltrt="Tukey")))
