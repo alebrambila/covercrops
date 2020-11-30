@@ -11,6 +11,7 @@ library(ggpubr)
 library(multcomp)
 library(cowplot)
 library(grid)
+library(nlme)
 
 # Set a theme
 theme_set(theme_cowplot() + theme(strip.background = element_blank(), 
@@ -110,7 +111,7 @@ pdf("fig1_baseline-distribution.pdf", width = 8, height = 5)
 f1v2
 
 # add panel labels
-grid.text(c("(a)", "(b)"),x = c(.12,.58),
+grid.text(c("(a)", "(b)"),x = c(.10,.58),
           y = c(.88,.88),
           gp=gpar(fontsize=18)) 
 dev.off()
@@ -123,11 +124,6 @@ acorn_total <- ACORN_DATA%>%
   spread(type, count) %>%
   mutate(total = infested + other) %>%
   mutate(alltrt=as.factor(paste(Treatment, year)))
-
-ggplot(acorn_total, aes(x= Treatment, y = total)) +
-  geom_boxplot(aes(fill=Treatment)) +
-  facet_wrap(~year)+
-  scale_fill_manual(values=c('darkorange','#9a00bd'))
 
 acorn_summed <- acorn_total %>%
   group_by(year, Treatment) %>%
@@ -187,13 +183,10 @@ pdf("fig2_grazingeffectonacorns.pdf", width = 8, height = 5)
 f2v3
 
 # add panel labels
-grid.text(c("(a)", "(b)"),x = c(.14,.59),
+grid.text(c("(a)", "(b)"),x = c(.13,.58),
           y = c(.88,.88),
           gp=gpar(fontsize=18)) 
 dev.off()
-
-
-
 
 ggarrange(f2b, f2a, nrow=2, ncol=1, common.legend = T, legend=F)
 
@@ -251,19 +244,19 @@ pdf("fig3_treatment-effects.pdf", width = 8, height = 5)
 fig3v2
 
 # add panel labels
-grid.text(c("(a)", "(b)"),x = c(.13,.6),
+grid.text(c("(a)", "(b)"),x = c(.12,.59),
           y = c(.88,.88),
           gp=gpar(fontsize=18)) 
 dev.off()
 
 ## Figure 3 Stats: 
 
-oak_abundance.aov <- aov(count ~ Treatment + year + Treatment:year, data = oakabundance1)
-summary(oak_abundance.aov)
-
-oakabundance1<-oakabundance1%>%
+oakabundance1<-oakabundance%>%
   mutate(alltrt=paste(year, Treatment))%>%
   mutate(alltrt=as.factor(alltrt))
+
+oak_abundance.aov <- aov(count ~ Treatment + year + Treatment:year, data = oakabundance1)
+summary(oak_abundance.aov)
 
 oakabaov<-aov(count~alltrt, oakabundance1)
 summary(glht(oakabaov, linfct=mcp(alltrt="Tukey")))
@@ -322,17 +315,14 @@ pdf("fig4_vegetation.pdf", width = 8, height = 8)
 fig4
 
 # add panel labels
-grid.text(c("(a)", "(b)", "(c)", "(d)"),x = c(.14,.59, .14,.59),
+grid.text(c("(a)", "(b)", "(c)", "(d)"),x = c(.13,.58, .13,.58),
           y = c(.92,.92, .46, .46),
           gp=gpar(fontsize=18)) 
 dev.off()
 
-
-
 vegaov<-aov(cover~timing*pig, subset(veg, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"))
 summary(glht(vegaov, linfct=mcp(alltrt="Tukey")))
 
-library(nlme)
 veglme<-lme(cover~timing*pig, random=~1|meter/transect, subset(veg, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"))
 summary(veglme)
 
