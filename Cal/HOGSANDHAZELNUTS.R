@@ -13,24 +13,18 @@ library(cowplot)
 library(grid)
 
 # Set a theme
-# theme_set(theme_classic())
 theme_set(theme_cowplot() + theme(strip.background = element_blank(), 
           text = element_text(size = 18), 
           axis.text = element_text(size = 16),
           strip.text = element_text(size = 18)))
 
-
-
-
 ACORN_DATA <- read_csv("ACORN_DATA.csv")
 
 FBW_DATA <- read_csv("FBW_DATA.csv")
 
-
 calcSE <- function(x){
   x <- x[!is.na(x)]
   sd(x)/sqrt(length(x))}
-
 
 ##Infested acorn change due to grazing##
 
@@ -92,25 +86,24 @@ infestedbaseline2<-infestedbaseline1%>%
 
 ## currently averaged across all years and tratments to show what ever happened.
 
-baselines<-FBW_DATA
+baselines<-FBW_DATA %>%
+  filter(!year==2020)
 baselines$type <- factor(baselines$type, levels = c("Emergence", "Abundance"))
 
-### Figure 1 ###
-f1<-ggplot(baselines, aes(y=count, x=Habitat)) +
-  geom_boxplot(aes(fill=Habitat))+
-  facet_wrap(~type)+
-  labs(y = "Average # of FBW") +
-  scale_fill_manual(values=c('#03b6fc','#9a00bd')) +
-  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
 
-plot(f1)
+oak_baselines <- baselines %>%
+  filter(Habitat == "Oak")
 
-## fig 1 reformatted
+hazel_baselines <- baselines %>%
+  filter(Habitat == "Hazelnut", type == "Abundance")
+
+### Figure 1 Reformated###
+
 f1v2 <- ggplot(baselines, aes(y=count, x=Habitat)) +
-  geom_boxplot(fill = "lightgrey")+
+  geom_boxplot(size=.75, outlier.size = 2)+
   facet_wrap(~type, scale = "free")+
-  labs(y = "Number of filbertworms per trap") + panel_border() 
-
+  labs(y = "Number of filbertworms per trap") + panel_border() +
+  theme(legend.position="none")
 
 pdf("fig1_baseline-distribution.pdf", width = 8, height = 5)
 
@@ -121,7 +114,6 @@ grid.text(c("(a)", "(b)"),x = c(.12,.58),
           y = c(.88,.88),
           gp=gpar(fontsize=18)) 
 dev.off()
-
 
 ##Acorn totals
 
@@ -141,14 +133,12 @@ acorn_summed <- acorn_total %>%
   group_by(year, Treatment) %>%
   summarize(meanacorn = mean(total), seacorn = calcSE(total))
   
-ggplot(acorn_summed, aes(x = year, y = meanacorn, color = Treatment)) + geom_point() + geom_line() +
-  scale_color_manual(values=c('grey80','grey30')) +
-  geom_errorbar(aes(ymin = meanacorn - seacorn, ymax = meanacorn + seacorn), width = .2) +
+ggplot(acorn_summed, aes(x = year, y = meanacorn, linetype=Treatment)) + geom_point(size=2) + geom_line(size=.75) +
+  geom_errorbar(aes(ymin = meanacorn - seacorn, ymax = meanacorn + seacorn), size=.75, width = .5) +
   labs(x = "Year", y = expression(paste("Acorns per m"^2))) + theme(legend.position = "none") +
   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) ) +   panel_border() 
 
 ggsave("SupFig-acornsovertime.pdf", width = 5, height = 4)
-
 
 
 #################### - THREE OPTIONS FOR FIGURE 2 - Effectiveness of Grazing ####################
@@ -156,49 +146,39 @@ ggsave("SupFig-acornsovertime.pdf", width = 5, height = 4)
 ### FIGURE 2.(v1) Proportion of infested acorns before grazing each year.
 # This figure shows how there was initially a higher proportion of infested acorns in the grazed plot than the paired control plot
 # but the following year, the pre-grazed infestation rate was lowered to be indistinguishable from the paired control plot
-f2a <- ggplot(data = infestedbaseline2, aes(x = year), show.legend = FALSE) +
-  geom_line(aes(y = meanratio, color = Treatment), show.legend = FALSE, lwd = .6) +
-  geom_point(aes( y = meanratio, color = Treatment), show.legend = FALSE, size=2) +
-  geom_errorbar(aes(ymin = (meanratio - se1), ymax = (meanratio + se1),
-                    color = Treatment), width= 0.2, show.legend = FALSE) +
-  labs( x = "",
-        y = "Proportion of Infested Acorns",
-        colour = "Treatment")+
-  scale_color_manual(values=c('grey80','grey30'))+
-  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) ) +
-  theme(legend.position="right", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
-  #annotate("text", x=2018.66, y= .5, label="* P=0.065", color='grey30') 
+f2a <- ggplot(data = infestedbaseline2, aes(x = year, y = meanratio, linetype = Treatment)) +
+  geom_line(size=.75) +
+  geom_point(size=2) +
+  geom_errorbar(aes(ymin = (meanratio - se1), ymax = (meanratio + se1)), width= 0.5, size=.75) +
+  labs( x = "", y = "Proportion of Infested Acorns")+
+  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25)) +
+  theme(legend.position = "none")
 
 plot(f2a)
 
 ### FIGURE 2. (v2) Number of infested acorns before and after grazing each year
 # The only change is now we see the infested acorn total, rather than proportion infested
-f2b <- ggplot(data = infestedtotal, aes(x = time, group=Treatment)) +
-  stat_summary(fun.y=sum, aes(y=meaninfested, color=Treatment), geom="line", lwd=.6)+
-  geom_point(aes( y = meaninfested, color = Treatment), show.legend = FALSE, size=2) +
-  geom_errorbar(aes(ymin = (meaninfested - se1), ymax = (meaninfested + se1),
-                    color = Treatment), width= 0.2, show.legend = FALSE) +
+f2b <- ggplot(data = infestedtotal, aes(x = time, y = meaninfested, linetype=Treatment, group=Treatment)) +
+  stat_summary(fun.y=sum, geom="line", lwd=.75)+
+  geom_point(size=2) +
+  geom_errorbar(aes(ymin = (meaninfested - se1), ymax = (meaninfested + se1)), width= 0.5, 
+  size=.75, show.legend = FALSE) +
   labs(
        x = "Time relative to grazing",
-       y = "# of infested acorns / m^2",
-       colour = "Treatment")+
+       y = "# of infested acorns / m^2")+
   facet_wrap(~year)+
-  scale_color_manual(values=c('grey80','grey30'))+
-  theme(legend.position="none", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
+  theme(legend.position="none")
 
 plot(f2b)
 
-f2v3 <- ggplot(data = subset(infestedtotal, year != 2020), aes(x = time, y = meaninfested, color=Treatment, group=Treatment)) +
-#  stat_summary(fun.y=sum, aes(y=meaninfested, color=Treatment), geom="line", lwd=.6)+
-  geom_line(lwd = .6) + 
-  geom_point(aes( y = meaninfested, color = Treatment), show.legend = FALSE, size=2) +
-  geom_errorbar(aes(ymin = (meaninfested - se1), ymax = (meaninfested + se1),
-                    color = Treatment), width= 0.2, show.legend = FALSE) +
+f2v3 <- ggplot(data = subset(infestedtotal, year != 2020), aes(x = time, y = meaninfested, linetype=Treatment, group=Treatment)) +
+  geom_line(size = .75) + 
+  geom_point(size=2) +
+  geom_errorbar(aes(ymin = (meaninfested - se1), ymax = (meaninfested + se1)), width= 0.5, show.legend = FALSE) +
   labs(
     x = "Time relative to grazing",
     y = expression(paste("Number of infested acorns per m"^2))) +
   facet_wrap(~year)+
-  scale_color_manual(values=c('grey80','grey30'))+
   theme(legend.position="none", legend.title = element_blank(), plot.caption = element_text(hjust = .5)) +
   panel_border() 
 
@@ -216,19 +196,6 @@ dev.off()
 
 
 ggarrange(f2b, f2a, nrow=2, ncol=1, common.legend = T, legend=F)
-
-### FIGURE 2 (v3)
-# This third option shows relative percent change in the number of infested nuts in grazed vs. ungrazed plots, 
-#  averaged across 2018 and 2019
-#f2v3 <- ggplot(data = infestedratio, aes(x = Treatment)) +
-#  geom_boxplot(mapping = aes( y = ratio2, color = Treatment), show.legend = FALSE) +
-#  labs(
-#    x = "",
-#    y = "% Change in infested nuts before and after grazing",
-#    colour = "Treatment")+
-#  scale_color_manual(values=c('#cb84e3','#9000bf')) +
-#  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))+
-#  annotate("text", x=1.5, y= 200, label="p=1.04x10^-5") 
 
 ############
 ##F2 Stats##
@@ -264,8 +231,6 @@ oakabundance <- filter(FBW_DATA, !is.na(count)) %>%
 # This figure shows how there was initially a higher proportion of infested acorns in the grazed plot than the paired control plot
 # but the following year, the pre-grazed infestation rate was lowered to be indist
 
-
-
 emergeabund <- FBW_DATA %>%
   filter(Habitat == "Oak") %>%
   group_by(year, Treatment, type) %>%
@@ -274,12 +239,11 @@ emergeabund <- FBW_DATA %>%
   mutate(type = factor(type, levels = c("Emergence", "Abundance")))
 
 
-fig3v2 <- ggplot(emergeabund, aes(x=year, y = mean1, color = Treatment)) + geom_line(lwd = .6) + geom_point(size = 2)+
-  geom_errorbar(aes(ymin = (mean1 - se3), ymax = (mean1 + se3)), width= 0.2) +
+fig3v2 <- ggplot(emergeabund, aes(x=year, y = mean1, linetype = Treatment)) + geom_line(size = .75) + geom_point(size=2)+
+  geom_errorbar(aes(ymin = (mean1 - se3), ymax = (mean1 + se3)), size=.75, width= 0.5) +
   labs( x = "Year",
     y = "Number of filbertworms per trap") +
   facet_wrap(~type, scales = "free") + theme(legend.position = "none") +
-  scale_color_manual(values=c('grey80','grey30')) +
   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25)) + panel_border() 
 
 pdf("fig3_treatment-effects.pdf", width = 8, height = 5)
@@ -291,51 +255,6 @@ grid.text(c("(a)", "(b)"),x = c(.13,.6),
           y = c(.88,.88),
           gp=gpar(fontsize=18)) 
 dev.off()
-
-
-# OLD FIGURE CODE
-# f3a <- ggplot(data = oakemergence, aes(x = year), show.legend = FALSE) +
-#   geom_line(aes(y = mean1,  color = Treatment), show.legend = FALSE) +
-#   geom_point(aes( y = mean1, color = Treatment), show.legend = FALSE) +
-#   geom_errorbar(aes(ymin = (mean1 - se3), ymax = (mean1 + se3),
-#                     color = Treatment), width= 0.2, show.legend = FALSE) +
-#   labs( x = "Emergence",
-#     y = "Number of filbertworms per trap",
-#     colour = "Treatment") +
-#   scale_color_manual(values=c('grey80','grey30')) +
-#   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) ) #+
-# #  annotate("text", x=2018.3, y= 1.2, label="** P=0.004", color='darkorange') +
-# #  annotate("text", x=2018.7, y= .7, label=" ** P<0.001") +
-# #  annotate("text", x=2019.7, y= 1.2, label=" ** P<0.001", color='darkorange')
-# 
-# f3b <- ggplot(data = oakabundance, aes(x = year)) +
-#   geom_line(aes(y = mean2,  color = Treatment), show.legend = FALSE) +
-#   geom_point(aes( y = mean2, color = Treatment), show.legend = FALSE) +
-#   geom_errorbar(aes(ymin = (mean2 - se4), ymax = (mean2 + se4),
-#                     color = Treatment, width= 0.2), show.legend = FALSE) +
-#   labs(y="",
-#        x = "Abundance",
-#        colour = "Treatment")+
-#   scale_color_manual(values=c('grey80','grey30')) +
-#   scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) )
-# 
-# ## Figure 3 Panel arrange##
-# ggarrange(f3a, f3b, common.legend = T)
-# 
-# oakemergence1 <- FBW_DATA %>%
-#   filter(type == "Emergence") %>%
-#   filter(Habitat == "Oak") 
-# 
-# oakabundance1 <- FBW_DATA %>%
-#   filter(type == "Abundance") %>%
-#   filter(Habitat == "Oak")
-# 
-# ggplot(data = oakemergence1, aes(x = Treatment)) +
-#   geom_boxplot(mapping = aes( y = count, color = Treatment))+
-#   facet_wrap(~ year, nrow = 1)
-
-
-
 
 ## Figure 3 Stats: 
 
@@ -364,45 +283,6 @@ summary(glht(oakemaov, linfct=mcp(alltrt="Tukey")))
 
 ggplot(oakabundance1, aes(x=alltrt, y=count)) + geom_boxplot()
 
-
-## Potentially Appendix material: 
-##FBW Abundance in Hazelnuts Before and After Treatment##
-
-#hazelnutabundance <- FBW_DATA %>%
-#  filter(type == "Abundance") %>%
-#  filter(Habitat == "Hazelnut") %>%
-#  group_by(year, Treatment) %>%
-#  summarise(mean3 = mean(count), se5 = calcSE(count)) %>%
-#  ungroup()
-
-#hazel_abund_Line <- ggplot(hazelnutabundance, aes(x = year, y = mean3)) + 
-#  geom_line(aes(y = mean3,  color = Treatment)) +
-#  geom_point(aes( y = mean3, color = Treatment), show.legend = FALSE) +
-#  geom_errorbar(aes(ymin = (mean3 - se5), ymax = (mean3 + se5),
-#  color = Treatment, width= 0.5), show.legend = FALSE) +
-#  labs(caption = "(p=0.21)",
-#       x = "Abundance",
-#       y = "Average # of FBW",
-#       colour = "Treatment")+
-#  scale_color_manual(values=c('#94d0ff','#0076d1')) +
-#  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25) ) +
-#  theme(legend.position="top", legend.title = element_blank(), plot.caption = element_text(hjust = .5))
-
-#plot (hazel_abund_Line)
-
-#hazelnutabundance1 <- FBW_DATA %>%
-#  filter(type == "Abundance") %>%
-#  filter(Habitat == "Hazelnut")
-
-#ggplot(data = hazelnutabundance1, aes(x = Treatment)) +
-#  geom_boxplot(mapping = aes( y = count, color = Treatment))+
-#  facet_wrap(~ year, nrow = 1)
-
-#hazelnut_abundance.aov <- aov(count ~ Treatment + year + Treatment:year, data = hazelnutabundance1)
-
-#summary(hazelnut_abundance.aov)
-
-
 ### VEGVEG ###
 
 veg<-read_csv("vegcov.csv")%>%
@@ -428,22 +308,14 @@ veg1<-veg%>%
   mutate(timing=as.integer(ifelse(timing=="B", 2018, 2020)))
 
 
-
-#ggplot(subset(veg, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"), aes(timing, cover)) +
-#  geom_boxplot(aes(fill=pig))+
-#  stat_summary(aes(timing, cover, group=pig, color=pig), fun.y=median, geom="line")+
-#  facet_wrap(~vegtype, scales="free")
-
-fig4 <- ggplot(subset(veg1, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"), aes(timing, meancover, color = pig)) +
-  #geom_boxplot(aes(fill=pig))+
-  stat_summary(aes(timing, meancover, group=pig, color=pig), 
-               fun.y=median, geom="line", show.legend = FALSE, lwd = .6) +
-  geom_point(size = 2) +
+fig4 <- ggplot(subset(veg1, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"&timing!="A"&vegtype!="native vine"), aes(timing, meancover, linetype = pig)) +
+  stat_summary(aes(timing, meancover, group=pig, linetype=pig), 
+               fun.y=median, geom="line", show.legend = FALSE, size=.75) +
+  geom_point(size=2) +
   geom_errorbar(aes(ymin = (meancover-secover), ymax = (meancover+secover),
-                    color = pig), width= 0.2, show.legend = FALSE)+facet_wrap(~vegtype)+xlab("Year")+ylab("Percent Cover")+
+                    linetype = pig), size=.75, width= 0.5, show.legend = FALSE)+facet_wrap(~vegtype)+xlab("Year")+ylab("Percent Cover")+
   scale_x_continuous(breaks=c(2018, 2020), limits=c(2017.75, 2020.25) )+
-  theme(legend.position = "none") +
-  scale_color_manual(values=c('grey80','grey30')) + panel_border() 
+  theme(legend.position = "none") + panel_border() 
 
 pdf("fig4_vegetation.pdf", width = 8, height = 8)
 
@@ -479,13 +351,3 @@ summary(vegherb)
 vegns<-lme(cover~timing*pig, random=~1|meter/transect, subset(veg, vegtype=="native shrub"&timing!="A"))
 summary(vegns)
 ## neither, only timing
-
-
-#ggplot(subset(veg0, vegtype!="distrubed"&vegtype!="moss"&vegtype!="tree"&vegtype!="wood"), aes(timing, diff)) +
-#  #geom_boxplot(aes(fill=pig))+
-#  stat_summary(aes(timing, diff, group=vegtype, color=vegtype), fun.y=median, geom="line")+
-#  geom_errorbar(aes(ymin = (diff-secover), ymax = (diff+secover),
-#                        color = vegtype), width= 0.05, show.legend = FALSE)+ylab("grazing impact on % cover")+
-#  geom_hline(yintercept=0)
-
-
