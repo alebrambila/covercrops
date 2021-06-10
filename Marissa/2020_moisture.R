@@ -15,7 +15,10 @@ moisture20<-moisture20i%>%
   select(-delete)%>%
   mutate(moisture=as.numeric(moisture), date=as.integer(date))%>%
   filter(!is.na(age))%>%
-  mutate(week=ifelse(date==407, 1, ifelse(date==424, 3, ifelse(date==501, 4, ifelse(date==510, 5, 6)))))
+  mutate(week=ifelse(date==407, 1, ifelse(date==424, 3, ifelse(date==501, 4, ifelse(date==510, 5, 6)))))%>%
+  mutate(moisture=ifelse(week==3, moisture*.77-3.5, moisture))%>%
+  mutate(management=ifelse(management=="None", 'unmanaged', tolower(management)), seedmix=tolower(seedmix))%>%
+  mutate(seedmix=ifelse(seedmix=='other'&management=="none", 'megamix', ifelse(seedmix=='other', 'industry', seedmix)))
 
 moisture20$management<-factor(moisture20$management, levels=c("None", 
                                                               "Flailed", 
@@ -41,12 +44,12 @@ ggplot(data=subset(moisture20, seedmix=="Control"), aes(x=week, y=moisture, colo
 
 #get means and standard error to simplify weekly plot
 m20_agg<-moisture20%>%
-  group_by(management, age, week ,seedmix)%>%
+  group_by( age, week ,seedmix)%>%
   summarize(mean_moisture=mean(moisture),
             se_moisture=calcSE(moisture))
 
 #controls by management
-ggplot(data=subset(m20_agg, seedmix=="Control"&week>3), aes(x=week, y=mean_moisture, color=management)) + facet_grid(~age)+
+ggplot(data=subset(m20_agg, seedmix=="Control"), aes(x=week, y=mean_moisture, color=management)) + facet_grid(~age)+
   geom_point()+
   geom_line()+
   geom_errorbar(aes(ymin=mean_moisture-se_moisture, ymax=mean_moisture+se_moisture), width=.2)+
@@ -68,7 +71,7 @@ TukeyHSD(aov(moisture_loss~management, data = subset(mmloss1, age=="40 years old
 
 
 #seedmixes compared
-ggplot(data=subset(m20_agg, week>3), aes(x=week, y=mean_moisture, color=seedmix)) + facet_grid(management~age)+
+ggplot(data=subset(m20_agg), aes(x=week, y=mean_moisture, color=seedmix)) + facet_grid(~age)+
   geom_point()+
   geom_line()+
   geom_errorbar(aes(ymin=mean_moisture-se_moisture, ymax=mean_moisture+se_moisture), width=.2)+
@@ -92,3 +95,36 @@ TukeyHSD(aov(moisture~seedmix+as.factor(week), data = subset(moisture20_consolid
 ################################################################################################################
 
 
+source('canopy.R')
+
+join20<-moisture20%>%
+  mutate(orchard_age=age)%>%
+  select(-age)
+moisture.canopy<-left_join(join20, canopy)
+
+ggplot(moisture.canopy, aes(x=canopy, y=moisture)) +
+ # geom_point(aes(color=seedmix)) +
+  geom_smooth(aes(color=seedmix), method='lm', se=F)+
+  facet_grid(~week)
+
+## cover * moisture 2020
+cov.moisture<-left_join(select(moisture.canopy,-year), subset(bare, year==2020))
+
+ggplot(subset(cov.moisture, species=='weeds'), aes(x=cov, y=moisture)) +
+  geom_point(aes(color=as.factor(seedmix))) +
+  geom_smooth(aes(color=as.factor(seedmix)), method='lm', se=F) +
+  #stat_smooth(aes(color=seedmix),method = "lm", se=F, formula = y ~ poly(x, 2), size = 1)+
+  facet_grid(~date)+  scale_linetype_manual(values=c("solid", "longdash", "dashed", "dotdash", "dotted")) #+
+
+cov.moisture.target<-left_join(select(moisture.canopy,-year), subset(mix_cov, year==2020))
+
+#different, increase cover = increase soil moisture
+ggplot(subset(cov.moisture.target), aes(x=cov, y=moisture)) +
+  geom_point(aes(color=as.factor(seedmix))) +
+  geom_smooth(aes(color=as.factor(seedmix)), method='lm', se=F) +
+  #stat_smooth(aes(color=seedmix),method = "lm", se=F, formula = y ~ poly(x, 2), size = 1)+
+  facet_grid(~date)+  scale_linetype_manual(values=c("solid", "longdash", "dashed", "dotdash", "dotted")) #+
+
+# 2020 was wet, 2021 is dry
+#in both years weeds decrease moisture, in 2021 total cover decreases moisture 2020 no effect. 
+#In 2021 natives decrease moisture, in 2020 they increase

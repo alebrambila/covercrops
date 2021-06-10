@@ -99,47 +99,4 @@ ggplot(mmloss1, aes(management, moisture_loss, fill=management))+
   ylab("One Week Soil Moisture Loss (% Volume)")
 
 
-########## cover data
-cover<-read_csv("community_cover.csv")%>%
-  group_by(orchard_age, block, management, seedmix)%>%
-  mutate(industry=sum(barley, oats, vetch, clover))%>%
-  select(-barley, -oats, -vetch, -clover)%>%
-  ungroup()%>%
-  gather("species", "cov", 5:24, 26)%>%
-  filter(!is.na(cov))%>%
-  select(-notes)
-
-cov$seedmix<-factor(cov$seedmix, levels=c("control", "industry", "perennials", "annuals", "megamix"))
-
-bare<-cover%>%
-  filter(species=="bare"|species=="weeds")
-
-#what's happening with bare
-b<-ggplot(subset(bare, bare$species=="bare"), aes(x=seedmix, y=cov))+
-         geom_boxplot(aes(fill=seedmix))+
-         facet_grid(orchard_age~management, scales="free")+ylab("Bare Ground % Cover")
-
-#what's happening with weeds
-w<-ggplot(subset(bare, species=="weeds"), aes(x=seedmix, y=cov))+
-  geom_boxplot(aes(fill=seedmix))+
-  facet_grid(orchard_age~management, scales="free")+ylab("% Cover Weeds")
-
-ggarrange(b, w, common.legend = T, legend = "right")
-bare$seedmix<-factor(bare$seedmix, levels=c("annuals", "perennials", "megamix", "industry", "control"))
-
-# total veg cover
-ggplot(subset(bare, bare$species=="bare"), aes(x=seedmix, y=100-cov))+
-  geom_boxplot(aes(fill=seedmix))+
-  facet_grid(orchard_age~management, scales="free")+ylab("Total Vegetation % Cover")+xlab("")
-
-#aggregate annuals, perennials, industry, megamix
-mix_cov<-cover%>%
-  group_by(orchard_age, block, management, seedmix)%>%
-  filter(species!="bare", species!="weeds")%>%
-  summarize(cov=sum(cov))
-mix_cov$seedmix<-factor(mix_cov$seedmix, levels=c("annuals", "perennials", "megamix", "industry"))
-
-ggplot(mix_cov, aes(x=seedmix, y=cov))+
-  geom_boxplot(aes(fill=seedmix))+
-  facet_grid(orchard_age~management, scales="free")+ylab("% Cover Target")
-            
+          
