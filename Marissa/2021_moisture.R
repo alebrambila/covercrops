@@ -7,6 +7,9 @@ library(googlesheets4)
 theme_set(theme_classic())
 gs4_deauth()
 gs_ls()
+
+source('2020_moisture.R')
+
 moisture21 <- read_sheet("https://docs.google.com/spreadsheets/d/1c_9D5NN0DIl5RYNbJPM59b1WNA_UZtrPglRGyQGXOWA/edit?usp=sharing")
 colnames(moisture21)<-c("orchardage", "block", "management", "seeding", "nail", "probe", "date", "notes")
 
@@ -15,7 +18,7 @@ moisture21_1<-moisture21%>%
   separate(probe, into=c("probe", "probe_p"), sep="/")%>%
   dplyr::select(1, 2, 3, 4, 5, 6, 7, 8, 9)%>%
   mutate(nail=as.numeric(nail), probe=as.numeric(probe), nail_p=as.numeric(nail_p), probe_p=as.numeric(probe_p))%>%
-  mutate(calibration=ifelse(is.na(nail), probe, (nail*.77)-3.5))%>%
+  mutate(calibration=ifelse(is.na(nail), probe, (nail*.81)-5.4))%>%
   mutate(management=tolower(management), seedmix=tolower(seeding))
   
 
@@ -25,7 +28,7 @@ moisture21_calibration<-moisture21_1%>%
 
 
 ggplot(moisture21_calibration, aes(x=nail, y=probe))+ geom_point(aes(color=date))+geom_smooth(method="lm")+
-  geom_abline(intercept = 0, slope = 1)+xlim(10, 63)+ylim(10, 63)+
+  geom_abline(intercept = 0, slope = 1)+#xlim(10, 63)+ylim(10, 63)+
   xlab("%VWC (Probe)")+ylab("%VWC (Nail)")+ theme_classic()+ stat_regline_equation()
 
 
@@ -37,23 +40,30 @@ calcSE<-function(x){
 }
 
 moisture21cal<-moisture21_1%>%
-  mutate(calibration=ifelse(is.na(nail), probe, (nail*.77)-3.5))%>%
-  mutate(month=as.numeric(ifelse(date=="03.24.21", 3, ifelse(date=="04.24.21", 4, 5))))%>%
+  mutate(calibration=ifelse(is.na(nail), probe, (nail*.81)-5.4))%>% #adjust this to calibration line above
+  mutate(month=as.numeric(ifelse(date=="03.24.21", 3, ifelse(date=="04.24.21", 4, ifelse(date=="05.14.21", 5,  ifelse(date=="07.31.21", 7,  8))))))%>%
   group_by(orchardage, seeding, month)%>%
-  summarize(meancal=mean(calibration), secal=calcSE(calibration))
+  summarize(meancal=mean(calibration, na.rm=T), secal=calcSE(calibration))
 
-ggplot(moisture21cal, aes(x=month, y=meancal)) +
+moisture21cal$seeding=factor(moisture21cal$seeding, levels=c("Annuals", "Perennials", "Megamix", "Industry", "Control", "true control", "north", "south"))
+
+ggplot(subset(moisture21cal, !seeding%in% c("true control", "north", "south")), aes(x=month, y=meancal)) +
   geom_point(aes(color=seeding)) +
   geom_line(aes(color=seeding))+
   geom_errorbar(aes(color=seeding, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
-  facet_grid(~orchardage)
+  facet_grid(~orchardage)+
+  labs(x="meek", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), )+scale_x_continuous(breaks=c(3, 4, 5, 6, 7, 8), labels=c("03.2021","04.2021", "05.2021", "06.2021", "07.2021", "08.2021"))
 
 
 moisture21diff<-moisture21_1%>%
   mutate(calibration=ifelse(is.na(nail), probe, (nail*.77)-3.5))%>%
-  mutate(month=as.numeric(ifelse(date=="03.24.21", 3, ifelse(date=="04.24.21", 4, 5))))%>%
-  dplyr::select(1, 2, 3, 4, 10, 11)%>%
-  spread(month, calibration)%>%
+  mutate(month=as.numeric(ifelse(date=="03.24.21", 3, ifelse(date=="04.24.21", 4, ifelse(date=="05.14.21", 5,  ifelse(date=="07.31.21", 7,  8))))))%>%
+  dplyr::select(1, 2, 3, 4, 10, 11, 12)%>%
+  group_by(orchardage, block, management, seeding, seedmix, month)%>%
+  summarize(calibration=mean(calibration))%>% #hack fix
+  ungroup()%>%
+  spread(month, calibration)%>%  #fix: Keys are shared for 2 rows: 673, 913
   mutate(`5`=`5`/`3`, `4`=`4`/`3`, `3`=1)%>%
   gather("month", "moisture.retained", `3`, `4`, `5`)%>%
   group_by(orchardage, seeding, month)%>%
@@ -65,7 +75,7 @@ ggplot(moisture21diff, aes(x=as.integer(month), y=mean.retained)) +
   geom_errorbar(aes(color=seeding, ymin=mean.retained-se.retained, ymax=mean.retained+se.retained), width=.2)+
   facet_grid(~orchardage)
 
-  
+  #not working
   
 
 
