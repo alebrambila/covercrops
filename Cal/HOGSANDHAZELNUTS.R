@@ -241,7 +241,24 @@ fig3v2 <- ggplot(emergeabund, aes(x=year, y = mean1, linetype = Treatment)) + ge
 
 pdf("fig3_treatment-effects.pdf", width = 8, height = 5)
 
-fig3v2
+fig3tenuretalk <- ggplot(emergeabund, aes(x=year, y = mean1, color = Treatment)) + geom_line(size = 1) + geom_point(size=3)+
+  geom_errorbar(aes(ymin = (mean1 - se3), ymax = (mean1 + se3)), size=.75, width= 0.5) +
+  labs( x = "Year",
+        y = "Number of filbertworms per trap") +
+  facet_wrap(~type, scales = "free") + theme(legend.position = "none") +
+  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25)) + panel_border() + scale_color_manual(values = c("grey50", "rosybrown3" )) 
+ggsave("fig3tenuretalk.pdf", width = 8, height = 4)
+
+emergeabundhack <- emergeabund %>%
+  filter( type == "Emergence" | Treatment == "Control")
+
+fig3tenuretalkcontrol <- ggplot(emergeabundhack, aes(x=year, y = mean1, color = Treatment)) + geom_line(size = 1) + geom_point(size=3)+
+  geom_errorbar(aes(ymin = (mean1 - se3), ymax = (mean1 + se3)), size=.75, width= 0.5) +
+  labs( x = "Year",
+        y = "Number of filbertworms per trap") +
+  facet_wrap(~type, scales = "free") + theme(legend.position = "none") +
+  scale_x_continuous(breaks=c(2018, 2019, 2020), limits=c(2017.75, 2020.25)) + panel_border() + scale_color_manual(values = c("grey50", "white"))
+ggsave("fig3tenuretalkcontrol.pdf", width = 8, height = 4)
 
 # add panel labels
 grid.text(c("(a)", "(b)"),x = c(.12,.59),
