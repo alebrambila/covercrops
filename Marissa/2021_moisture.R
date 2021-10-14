@@ -41,20 +41,190 @@ calcSE<-function(x){
 
 moisture21cal<-moisture21_1%>%
   mutate(calibration=ifelse(is.na(nail), probe, (nail*.81)-5.4))%>% #adjust this to calibration line above
-  mutate(month=as.numeric(ifelse(date=="03.24.21", 3, ifelse(date=="04.24.21", 4, ifelse(date=="05.14.21", 5,  ifelse(date=="07.31.21", 7,  8))))))%>%
+  mutate(month=as.numeric(ifelse(date=="03.24.21", 3, ifelse(date=="04.24.21", 4, ifelse(date=="05.14.21", 5,  ifelse(date=="07.31.21", 6,  8))))))%>%
   group_by(orchardage, seeding, month)%>%
   summarize(meancal=mean(calibration, na.rm=T), secal=calcSE(calibration))
 
 moisture21cal$seeding=factor(moisture21cal$seeding, levels=c("Annuals", "Perennials", "Megamix", "Industry", "Control", "true control", "north", "south"))
 
-ggplot(subset(moisture21cal, !seeding%in% c("true control", "north", "south")), aes(x=month, y=meancal)) +
+
+#Figure 3: Moistures in 2021.. RAW
+ggplot(subset(moisture21cal, !seeding%in% c("true control", "north", "south", "Megamix")), aes(x=month, y=meancal)) +
   geom_point(aes(color=seeding)) +
   geom_line(aes(color=seeding))+
   geom_errorbar(aes(color=seeding, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
-  facet_grid(~orchardage)+
+  facet_wrap(~orchardage, scales="free")+  scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
   labs(x="meek", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
-  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), )+scale_x_continuous(breaks=c(3, 4, 5, 6, 7, 8), labels=c("03.2021","04.2021", "05.2021", "06.2021", "07.2021", "08.2021"))
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), )+scale_x_continuous(breaks=c(3, 4, 5, 6, 7, 8), labels=c("march","april", "may", "june", "july", "august"))
 
+
+# moisture in 2021 - canopy bins: test.
+
+moisture21bin<-left_join(mutate(moisture21_1, orchard_age=orchardage, year=2021), canopy)%>%
+  mutate(calibration=ifelse(is.na(nail), probe, (nail*.81)-5.4))%>% #adjust this to calibration line above
+  mutate(month=as.numeric(ifelse(date=="03.24.21", 3, ifelse(date=="04.24.21", 4, ifelse(date=="05.14.21", 5,  ifelse(date=="07.31.21", 6,  8))))))%>%
+  filter(!is.na(canopy))%>%
+  mutate(bin10=ifelse(canopy<11, 0, ifelse(canopy<21&canopy>10, 10, ifelse(canopy<31&canopy>20, 20, ifelse(canopy<41&canopy>30, 30, ifelse(canopy<51&canopy>40, 40, ifelse(canopy<61&canopy>50, 50, ifelse(canopy<71&canopy>60, 60, ifelse(canopy<81&canopy>70, 70, ifelse(canopy<91&canopy>80, 80, 90))))))))))%>%
+ mutate(bin20=ifelse(canopy<21, "0-20", ifelse(canopy<41&canopy>20, "20-40", ifelse(canopy<61&canopy>40, "40-60", ifelse(canopy<81&canopy>60, "60-80", "80-100")))))%>%
+  mutate(bin25=ifelse(canopy<26, "0-25", ifelse(canopy<51&canopy>25, "26-50", ifelse(canopy<76&canopy>51, "51-75", "75-100"))))%>%
+  mutate(evenbin=ifelse(canopy<21, "0-20", ifelse(canopy<38&canopy>20, "20-37", ifelse(canopy<45&canopy>37, "38-44", "45-100"))))
+
+
+binall_2021<-moisture21bin%>%
+  filter(orchard_age!=15)%>%
+  group_by(seeding, month)%>%
+  summarize(meancal=mean(calibration), secal=calcSE(calibration), n=n())
+
+
+bin10<-moisture21bin%>%
+  filter(orchardage!=15)%>%
+  group_by(bin10, seeding, month)%>%
+  summarize(meancal=mean(calibration, na.rm=T), secal=calcSE(calibration), n=n())
+
+bin20<-moisture21bin%>%
+  filter(orchardage!=15)%>%
+  group_by(bin20, seeding, month)%>%
+  summarize(meancal=mean(calibration, na.rm=T), secal=calcSE(calibration), n=n())
+
+bin25<-moisture21bin%>%
+  filter(orchardage!=15)%>%
+  group_by(bin25, seeding, month)%>%
+  summarize(meancal=mean(calibration, na.rm=T), secal=calcSE(calibration), n=n())
+
+
+evenbin<-moisture21bin%>%
+  filter(orchardage!=15)%>%
+  group_by(evenbin, seeding, month)%>%
+  summarize(meancal=mean(calibration, na.rm=T), secal=calcSE(calibration), n=n())
+
+#2021 alternate "binned" excluding 15 year old. 
+ggplot(subset(bin25, !seeding%in% c("true control", "north", "south", "Megamix")), aes(x=month, y=meancal)) +
+  geom_jitter(data=subset(moisture21bin, orchardage!=15), aes(y=calibration, color=seeding), size=.75, width=.2, alpha=.5)+
+  geom_point(aes(color=seeding)) +
+  geom_line(aes(color=seeding))+
+  geom_errorbar(aes(color=seeding, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
+  facet_wrap(~bin25, scales="free")+  scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
+  labs(x="meek", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), )+
+  scale_x_continuous(breaks=c(3, 4, 5, 6, 7, 8), labels=c("march","april", "may", "june", "july", "august"))
+
+
+
+#isoclines test month
+grid.arrange(
+ggplot(subset(moisture21bin, !seeding%in% c("true control", "north", "south", "Megamix")&orchardage!=15), aes(x=canopy, y=calibration)) +
+  geom_point(aes(color=as.factor(month))) +
+  geom_smooth(aes(color=as.factor(month)), method="lm", se=F)+
+#geom_errorbar(aes(color=seeding, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
+  facet_wrap(~seeding, scales="free")+  scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
+  labs(x="meek", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), ),
+ggplot(subset(moisture20bin, !seedmix%in% c("megamix")&age!=15), aes(x=canopy, y=moisture)) +
+  geom_point(aes(color=as.factor(week))) +
+  geom_smooth(aes(color=as.factor(week)), method="lm", se=F)+
+  #geom_errorbar(aes(color=seeding, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
+  facet_wrap(~seedmix, scales="free")+  scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
+  labs(x="meek", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), ),
+nrow=2)
+
+
+#isoclines test mix
+grid.arrange(
+  ggplot(subset(moisture21bin, !seeding%in% c("true control", "north", "south", "Megamix")&orchardage!=15), aes(x=canopy, y=calibration)) +
+    geom_point(aes(color=as.factor(seeding))) +
+    geom_smooth(aes(color=as.factor(seeding)), method="lm", se=F)+
+    #geom_errorbar(aes(color=seeding, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
+    facet_wrap(~as.factor(month), scales="free")+  scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
+    labs(x="meek", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+    scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), ),
+  ggplot(subset(moisture20bin, !seedmix%in% c("megamix")&age!=15), aes(x=canopy, y=moisture)) +
+    geom_point(aes(color=as.factor(seedmix))) +
+    geom_smooth(aes(color=as.factor(seedmix)), method="lm", se=F)+
+    #geom_errorbar(aes(color=seeding, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
+    facet_wrap(~week, scales="free")+  scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
+    labs(x="meek", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+    scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), ),
+  nrow=2)
+
+
+#2020 (copied from other script)
+ggplot(data=subset(m20_agg, seedmix!="megamix"), aes(x=week, y=mean_moisture, color=seedmix)) +
+  facet_wrap(~age, scales="free")+  scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
+  geom_point()+
+  geom_line()+
+  geom_errorbar(aes(ymin=mean_moisture-se_moisture, ymax=mean_moisture+se_moisture), width=.2)+
+  labs(x="week", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), )+scale_x_continuous(breaks=c(1, 2, 3, 4, 5, 6), labels=c("april 7","", "april 24", "may 1", "may 10", "may 17"))
+
+moisture20bin<-left_join(mutate(moisture20, orchard_age=age, year=2020), canopy)%>%
+ # mutate(calibration=ifelse(is.na(nail), probe, (nail*.81)-5.4))%>% #notcalibrated
+  filter(!is.na(canopy))%>%
+  mutate(bin10=ifelse(canopy<11, 0, ifelse(canopy<21&canopy>10, 10, ifelse(canopy<31&canopy>20, 20, ifelse(canopy<41&canopy>30, 30, ifelse(canopy<51&canopy>40, 40, ifelse(canopy<61&canopy>50, 50, ifelse(canopy<71&canopy>60, 60, ifelse(canopy<81&canopy>70, 70, ifelse(canopy<91&canopy>80, 80, 90))))))))))%>%
+  mutate(bin20=ifelse(canopy<21, 0, ifelse(canopy<41&canopy>20, 20, ifelse(canopy<61&canopy>40, 40, ifelse(canopy<81&canopy>60, 60, 80)))))%>%
+  mutate(bin25=ifelse(canopy<26, "0-25", ifelse(canopy<51&canopy>25, "26-50", ifelse(canopy<76&canopy>51, "51-75", "75-100"))))
+
+binall_2020<-moisture20bin%>%
+  filter(orchard_age!=15)%>%
+  group_by(seedmix, week)%>%
+  summarize(meancal=mean(moisture, na.rm=T), secal=calcSE(moisture), n=n())
+
+bin10_2020<-moisture20bin%>%
+  filter(orchard_age!=15)%>%
+  group_by(bin10, seedmix, week)%>%
+  summarize(meancal=mean(moisture, na.rm=T), secal=calcSE(moisture), n=n())
+
+bin20_2020<-moisture20bin%>%
+  filter(orchard_age!=15)%>%
+  group_by(bin20, seedmix, week)%>%
+  summarize(meancal=mean(moisture, na.rm=T), secal=calcSE(moisture), n=n())
+
+bin25_2020<-moisture20bin%>%
+  filter(orchard_age!=15)%>%
+  group_by(bin25, seedmix, week)%>%
+  summarize(meancal=mean(moisture, na.rm=T), secal=calcSE(moisture), n=n())
+#evenbin<-moisture21bin%>%
+#  filter(orchardage!=15)%>%
+##  group_by(evenbin, seeding, month)%>%
+ # summarize(meancal=mean(calibration, na.rm=T), secal=calcSE(calibration), n=n())
+
+#2020 alternate "binned" excluding 15 year old. 
+ggplot(subset(bin25_2020, !seedmix%in% c("megamix")), aes(x=week, y=meancal)) +
+  geom_jitter(data=subset(moisture20bin, orchard_age!=15), aes(y=moisture, color=seedmix), size=.75, width=.2, alpha=.5)+
+  geom_point(aes(color=seedmix)) +
+  geom_line(aes(color=seedmix))+
+  geom_errorbar(aes(color=seedmix, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
+  facet_wrap(~bin25, scales="free")+  scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
+  labs(x="meek", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), )+
+scale_x_continuous(breaks=c(1, 2, 3, 4, 5, 6), labels=c("april 7","", "april 24", "may 1", "may 10", "may 17"))
+
+#2020 and 2021 NOT BINNED
+ggplot(subset(binall_2020, seedmix!="megamix"), aes(x=week, y=meancal)) +
+  geom_jitter(data=subset(moisture20bin, orchard_age!=15&seedmix!="megamix"), aes(y=moisture, color=seedmix), size=.75, width=.2, alpha=.5)+
+  geom_point(aes(color=seedmix)) +
+  geom_line(aes(color=seedmix))+
+  geom_errorbar(aes(color=seedmix, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
+ scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
+  labs(x="week", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+  scale_color_manual(values=c("#999999", "darkred", "#56B4E9", "#E69F00"), )+
+  scale_x_continuous(breaks=c(1, 2, 3, 4, 5, 6), labels=c("april 7","", "april 24", "may 1", "may 10", "may 17"))
+ggplot(subset(binall_2021, !seeding%in% c("true control", "north", "south", "Megamix")), aes(x=month, y=meancal)) +
+  geom_jitter(data=subset(moisture21bin, orchardage!=15), aes(y=calibration, color=seeding), size=.75, width=.2, alpha=.5)+
+  geom_point(aes(color=seeding)) +
+  geom_line(aes(color=seeding))+
+  geom_errorbar(aes(color=seeding, ymin=meancal-secal, ymax=meancal+secal), width=.2)+
+scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
+  labs(x="month", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
+  scale_color_manual(values=c("grey70", "darkred","#56B4E9","black","#E69F00"), )+
+  scale_x_continuous(breaks=c(3, 4, 5, 6, 7, 8), labels=c("march","april", "may", "june", "july", "august"))
+
+
+
+m20_agg<-moisture20%>%
+  group_by( age, week ,seedmix)%>%
+  summarize(mean_moisture=mean(moisture),
+            se_moisture=calcSE(moisture))
 
 moisture21diff<-moisture21_1%>%
   mutate(calibration=ifelse(is.na(nail), probe, (nail*.77)-3.5))%>%
@@ -90,7 +260,7 @@ moisture20$seedmix<-factor(moisture20$seedmix, levels=c("Control", "Annuals", "P
 ggplot(data=subset(moisture20, seedmix=="Control"), aes(x=week, y=moisture, color=management)) + 
   geom_point()+
   geom_line(aes(group=interaction(block, management)))+
-  facet_wrap(~age)+
+  #facet_wrap(~age)+
   labs(x="day", y="Soil % Water by Volume")+
   scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"), 
                      name="Orchard Floor \nManagement",

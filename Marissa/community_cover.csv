@@ -1,0 +1,217 @@
+﻿orchard_age,block,management,seedmix,bare,weeds,amsinckia,plectritis,collomia,clarkia,epilobium,gilia,sanguisorba,lotus,achillea,geum,prunella,potentilla,eriophyllum,agoseris,viola,lomatium,barley,oats,vetch,clover,all_annuals,all_perennials,notes
+15,6,scraped,annuals,2,90,1,10,8,13,25,1,2,0,,,,,,,,,,,,,,,next to doug firs
+15,6,scraped,perennials,0,98,,,,,,,,,10,3,25,0,3,0,0,2,,,,,,,next to doug firs
+15,6,scraped,industry,1,99,,,,,,,,,,,,,,,,,2,2,0,1,,,next to doug firs
+15,6,scraped,control,1,99,,,,,,,,,,,,,,,,,,,,,,,next to doug firs
+15,6,flailed,annuals,10,45,3,15,0,25,25,2,3,2,,,,,,,,,,,,,,,next to doug firs
+15,6,flailed,perennials,5,90,,,,,,,,,25,3,20,1,2,1,0,2,,,,,,,next to doug firs
+15,6,flailed,industry,0,90,,,,,,,,,,,,,,,,,2,2,3,2,,,next to doug firs
+15,6,flailed,control,10,90,,,,,,,,,,,,,,,,,,,,,,,next to doug firs
+15,6,unmanaged,annuals,0,80,3,10,2,25,18,1,1,0,,,,,,,,,,,,,,,next to doug firs
+15,6,unmanaged,perennials,0,99,,,,,,,,,20,3,20,1,4,0,0,3,,,,,,,next to doug firs
+15,6,unmanaged,megamix,2,90,,,,,,,,,,,,,,,,,,,,,65,3,next to doug firs
+15,6,unmanaged,control,3,97,,,,,,,,,,,,,,,,,,,,,,,next to doug firs
+15,5,scraped,annuals,3,65,3,3,20,7,60,3,2,1,,,,,,,,,,,,,,,next to doug firs
+15,5,scraped,perennials,3,95,,,,,,,,,20,3,10,2,0,0,0,2,,,,,,,next to doug firs
+15,5,scraped,industry,1,99,,,,,,,,,,,,,,,,,3,3,2,2,,,next to doug firs
+15,5,scraped,control,0,100,,,,,,,,,,,,,,,,,,,,,,,next to doug firs
+15,5,flailed,annuals,1,90,4,5,4,15,45,2,3,0,,,,,,,,,,,,,,,next to doug firs
+15,5,flailed,perennials,1,95,,,,,,,,,25,5,15,1,0,0,0,2,,,,,,,next to doug firs
+15,5,flailed,industry,0,99,,,,,,,,,,,,,,,,,3,4,0,2,,,next to doug firs
+15,5,flailed,control,0,100,,,,,,,,,,,,,,,,,,,,,,,next to doug firs
+15,5,unmanaged,annuals,1,95,2,2,4,25,25,3,1,0,,,,,,,,,,,,,,,next to doug firs
+15,5,unmanaged,perennials,1,95,,,,,,,,,15,10,7,1,1,0,0,3,,,,,,,next to doug firs
+15,5,unmanaged,megamix,0,98,,,,,,,,,,,,,,,,,,,,,75,2,next to doug firs
+15,5,unmanaged,control,0,100,,,,,,,,,,,,,,,,,,,,,,,next to doug firs
+15,4,scraped,annuals,4,40,4,3,20,10,60,4,2,0,,,,,,,,,,,,,,,next to doug firs
+15,4,scraped,perennials,3,95,,,,,,,,,30,5,10,2,3,0,0,5,,,,,,,next to doug firs
+15,4,scraped,industry,10,80,,,,,,,,,,,,,,,,,4,0,2,3,,,next to doug firs
+15,4,scraped,control,3,97,,,,,,,,,,,,,,,,,,,,,,,next to doug firs
+15,4,flailed,annuals,3,45,3,15,15,25,25,3,2,0,,,,,,,,,,,,,,,next to doug firs
+15,4,flailed,perennials,2,85,,,,,,,,,15,10,20,2,4,0,0,2,,,,,,,next to doug firs
+15,4,flailed,industry,1,99,,,,,,,,,,,,,,,,,5,3,1,2,,,next to doug firs
+15,4,flailed,control,1,99,,,,,,,,,,,,,,,,,,,,,,,next to doug firs
+15,4,unmanaged,annuals,5,40,5,4,5,10,40,15,6,0,,,,,,,,,,,,,,,next to doug firs
+15,4,unmanaged,perennials,5,75,,,,,,,,,20,4,5,2,2,0,0,3,,,,,,,next to doug firs
+15,4,unmanaged,megamix,1,50,,,,,,,,,,,,,,,,,,,,,85,2,next to doug firs
+15,4,unmanaged,control,1,99,,,,,,,,,,,,,,,,,,,,,,,next to doug firs
+15,3,scraped,annuals,1,15,70,10,10,30,20,6,2,1,,,,,,,,,,,,,,,
+15,3,scraped,perennials,0,25,,,,,,,,,70,3,35,2,6,3,1,5,,,,,,,
+15,3,scraped,industry,5,90,,,,,,,,,,,,,,,,,5,10,2,5,,,
+15,3,scraped,control,2,98,,,,,,,,,,,,,,,,,,,,,,,
+15,3,flailed,annuals,2,15,65,12,5,40,25,15,2,0,,,,,,,,,,,,,,,
+15,3,flailed,perennials,0,45,,,,,,,,,50,15,25,1,4,2,0,3,,,,,,,
+15,3,flailed,industry,3,90,,,,,,,,,,,,,,,,,6,5,5,10,,,
+15,3,flailed,control,4,96,,,,,,,,,,,,,,,,,,,,,,,
+15,3,unmanaged,annuals,0,6,80,20,7,7,20,15,0,0,,,,,,,,,,,,,,,
+15,3,unmanaged,perennials,0,30,,,,,,,,,70,1,20,2,5,8,0,3,,,,,,,
+15,3,unmanaged,megamix,1,60,,,,,,,,,,,,,,,,,,,,,80,8,
+15,3,unmanaged,control,2,98,,,,,,,,,,,,,,,,,,,,,,,
+15,2,scraped,annuals,5,8,15,12,35,20,25,15,6,3,,,,,,,,,,,,,,,
+15,2,scraped,perennials,3,65,,,,,,,,,75,8,60,0,4,0,0,6,,,,,,,
+15,2,scraped,industry,5,80,,,,,,,,,,,,,,,,,10,15,0,20,,,
+15,2,scraped,control,3,97,,,,,,,,,,,,,,,,,,,,,,,
+15,2,flailed,annuals,2,10,15,20,10,45,40,10,2,0,,,,,,,,,,,,,,,
+15,2,flailed,perennials,15,45,,,,,,,,,45,15,20,2,15,0,1,5,,,,,,,
+15,2,flailed,industry,12,70,,,,,,,,,,,,,,,,,10,25,10,10,,,
+15,2,flailed,control,20,80,,,,,,,,,,,,,,,,,,,,,,,
+15,2,unmanaged,annuals,1,10,25,20,20,35,40,15,8,0,,,,,,,,,,,,,,,
+15,2,unmanaged,perennials,3,50,,,,,,,,,65,15,40,3,7,2,0,5,,,,,,,
+15,2,unmanaged,megamix,1,20,,,,,,,,,,,,,,,,,,,,,85,15,
+15,2,unmanaged,control,20,80,,,,,,,,,,,,,,,,,,,,,,,
+15,1,scraped,annuals,3,20,18,20,3,25,35,15,7,3,,,,,,,,,,,,,,,
+15,1,scraped,perennials,1,80,,,,,,,,,55,35,25,4,5,2,0,7,,,,,,,
+15,1,scraped,industry,15,70,,,,,,,,,,,,,,,,,15,20,10,4,,,
+15,1,scraped,control,15,85,,,,,,,,,,,,,,,,,,,,,,,
+15,1,flailed,annuals,2,6,12,25,5,30,40,30,3,3,,,,,,,,,,,,,,,
+15,1,flailed,perennials,7,75,,,,,,,,,50,20,40,1,15,0,0,6,,,,,,,
+15,1,flailed,industry,20,60,,,,,,,,,,,,,,,,,15,20,2,3,,,
+15,1,flailed,control,1,99,,,,,,,,,,,,,,,,,,,,,,,
+15,1,unmanaged,annuals,3,15,25,30,15,15,50,50,6,3,,,,,,,,,,,,,,,
+15,1,unmanaged,perennials,2,50,,,,,,,,,65,15,30,0,5,1,1,6,,,,,,,
+15,1,unmanaged,megamix,10,25,,,,,,,,,,,,,,,,,,,,,80,5,
+15,1,unmanaged,control,10,90,,,,,,,,,,,,,,,,,,,,,,,
+40,6,scraped,annuals,5,4,10,2,20,12,60,10,10,2,,,,,,,,,,,,,,,munched collomia
+40,6,scraped,perennials,15,15,,,,,,,,,45,35,25,10,10,0,0,4,,,,,,,
+40,6,scraped,industry,35,45,,,,,,,,,,,,,,,,,5,0,0,5,,,
+40,6,scraped,control,35,65,,,,,,,,,,,,,,,,,,,,,,,
+40,6,flailed,annuals,7,5,15,0,5,15,75,3,7,5,,,,,,,,,,,,,,,
+40,6,flailed,perennials,20,20,,,,,,,,,35,45,25,5,6,0,3,3,,,,,,,
+40,6,flailed,industry,80,15,,,,,,,,,,,,,,,,,0,0,0,3,,,
+40,6,flailed,control,70,30,,,,,,,,,,,,,,,,,,,,,,,
+40,6,unmanaged,annuals,3,2,10,3,15,15,80,5,3,4,,,,,,,,,,,,,,,
+40,6,unmanaged,perennials,25,4,,,,,,,,,35,75,30,12,10,0,1,6,,,,,,,
+40,6,unmanaged,megamix,10,15,,,,,,,,,,,,,,,,,,,,,75,35,
+40,6,unmanaged,control,30,70,,,,,,,,,,,,,,,,,,,,,,,
+40,5,scraped,annuals,10,4,15,0,0,10,75,10,8,2,,,,,,,,,,,,,,,munched
+40,5,scraped,perennials,20,15,,,,,,,,,35,55,25,10,10,0,2,3,,,,,,,munched
+40,5,scraped,industry,70,15,,,,,,,,,,,,,,,,,5,7,3,6,,,munched
+40,5,scraped,control,65,35,,,,,,,,,,,,,,,,,,,,,,,munched
+40,5,flailed,annuals,15,4,3,0,2,8,65,3,4,1,,,,,,,,,,,,,,,munched
+40,5,flailed,perennials,15,15,,,,,,,,,30,75,30,7,10,0,2,2,,,,,,,munched
+40,5,flailed,industry,60,20,,,,,,,,,,,,,,,,,5,10,5,3,,,munched
+40,5,flailed,control,75,25,,,,,,,,,,,,,,,,,,,,,,,munched
+40,5,unmanaged,annuals,75,20,10,0,2,3,0,4,8,6,,,,,,,,,,,,,,,epilobium all rotted out
+40,5,unmanaged,perennials,35,10,,,,,,,,,18,35,10,3,7,0,4,0,,,,,,,
+40,5,unmanaged,megamix,7,5,,,,,,,,,,,,,,,,,,,,,85,20,
+40,5,unmanaged,control,80,20,,,,,,,,,,,,,,,,,,,,,,,
+40,4,scraped,annuals,7,3,3,2,5,45,70,4,1,3,,,,,,,,,,,,,,,
+40,4,scraped,perennials,7,15,,,,,,,,,65,65,45,7,15,0,0,2,,,,,,,
+40,4,scraped,industry,80,20,,,,,,,,,,,,,,,,,0,3,0,3,,,
+40,4,scraped,control,65,35,,,,,,,,,,,,,,,,,,,,,,,
+40,4,flailed,annuals,30,15,5,1,2,15,20,10,4,4,,,,,,,,,,,,,,,
+40,4,flailed,perennials,15,20,,,,,,,,,40,45,15,3,20,0,2,0,,,,,,,
+40,4,flailed,industry,50,40,,,,,,,,,,,,,,,,,1,0,0,10,,,
+40,4,flailed,control,40,60,,,,,,,,,,,,,,,,,,,,,,,
+40,4,unmanaged,annuals,5,3,2,1,2,45,80,4,1,4,,,,,,,,,,,,,,,
+40,4,unmanaged,perennials,20,15,,,,,,,,,40,40,35,10,15,0,2,0,,,,,,,
+40,4,unmanaged,megamix,8,5,,,,,,,,,,,,,,,,,,,,,75,35,
+40,4,unmanaged,control,85,15,,,,,,,,,,,,,,,,,,,,,,,
+40,3,scraped,annuals,5,2,4,0,3,3,85,2,2,0,,,,,,,,,,,,,,,
+40,3,scraped,perennials,10,10,,,,,,,,,55,75,30,5,8,0,1,6,,,,,,,
+40,3,scraped,industry,65,30,,,,,,,,,,,,,,,,,0,5,0,2,,,
+40,3,scraped,control,60,40,,,,,,,,,,,,,,,,,,,,,,,
+40,3,flailed,annuals,8,10,2,0,2,10,85,0,2,0,,,,,,,,,,,,,,,
+40,3,flailed,perennials,40,15,,,,,,,,,10,35,10,10,3,0,1,0,,,,,,,
+40,3,flailed,industry,85,10,,,,,,,,,,,,,,,,,0,2,0,2,,,
+40,3,flailed,control,90,10,,,,,,,,,,,,,,,,,,,,,,,
+40,3,unmanaged,annuals,5,3,1,0,4,15,85,2,1,0,,,,,,,,,,,,,,,
+40,3,unmanaged,perennials,15,15,,,,,,,,,45,80,20,5,15,0,0,0,,,,,,,
+40,3,unmanaged,megamix,6,5,,,,,,,,,,,,,,,,,,,,,90,50,
+40,3,unmanaged,control,25,75,,,,,,,,,,,,,,,,,,,,,,,
+40,2,scraped,annuals,65,5,2,10,3,2,25,2,1,0,,,,,,,,,,,,,,,annuals rotten
+40,2,scraped,perennials,10,15,,,,,,,,,40,65,45,4,3,0,1,1,,,,,,,
+40,2,scraped,industry,50,20,,,,,,,,,,,,,,,,,40,15,2,2,,,
+40,2,scraped,control,40,60,,,,,,,,,,,,,,,,,,,,,,,
+40,2,flailed,annuals,40,10,0,5,5,1,15,1,1,0,,,,,,,,,,,,,,,annuals rotten
+40,2,flailed,perennials,30,20,,,,,,,,,12,60,30,4,3,0,0,2,,,,,,,
+40,2,flailed,industry,20,10,,,,,,,,,,,,,,,,,40,40,4,2,,,
+40,2,flailed,control,80,20,,,,,,,,,,,,,,,,,,,,,,,
+40,2,unmanaged,annuals,45,60,0,3,3,0,8,0,0,0,,,,,,,,,,,,,,,annuals rotten
+40,2,unmanaged,perennials,25,65,,,,,,,,,5,35,20,2,2,0,2,1,,,,,,,
+40,2,unmanaged,megamix,40,25,,,,,,,,,,,,,,,,,,,,,35,35,
+40,2,unmanaged,control,85,15,,,,,,,,,,,,,,,,,,,,,,,
+40,1,scraped,annuals,6,30,4,3,15,8,35,20,2,1,,,,,,,,,,,,,,,
+40,1,scraped,perennials,5,85,,,,,,,,,12,20,8,2,5,0,1,3,,,,,,,
+40,1,scraped,industry,30,30,,,,,,,,,,,,,,,,,25,25,15,15,,,
+40,1,scraped,control,10,90,,,,,,,,,,,,,,,,,,,,,,,
+40,1,flailed,annuals,25,70,2,0,6,1,5,3,2,0,,,,,,,,,,,,,,,
+40,1,flailed,perennials,50,40,,,,,,,,,15,30,30,3,3,0,2,2,,,,,,,
+40,1,flailed,industry,4,90,,,,,,,,,,,,,,,,,20,30,5,2,,,
+40,1,flailed,control,1,99,,,,,,,,,,,,,,,,,,,,,,,
+40,1,unmanaged,annuals,15,60,15,3,12,4,15,8,1,0,,,,,,,,,,,,,,,
+40,1,unmanaged,perennials,4,80,,,,,,,,,70,60,40,1,3,0,1,2,,,,,,,
+40,1,unmanaged,megamix,7,70,,,,,,,,,,,,,,,,,,,,,50,25,
+40,1,unmanaged,control,7,93,,,,,,,,,,,,,,,,,,,,,,,
+60,6,scraped,annuals,8,2,2,0,30,20,80,5,2,3,,,,,,,,,,,,,,,
+60,6,scraped,perennials,,,,,,,,,,,35,40,10,10,25,0,3,1,,,,,,,
+60,6,scraped,industry,20,60,,,,,,,,,,,,,,,,,0,40,10,5,,,
+60,6,scraped,control,45,55,,,,,,,,,,,,,,,,,,,,,,,
+60,6,flailed,annuals,8,2,4,0,35,20,65,7,7,2,,,,,,,,,,,,,,,
+60,6,flailed,perennials,20,15,,,,,,,,,55,45,15,12,15,0,1,4,,,,,,,
+60,6,flailed,industry,50,25,,,,,,,,,,,,,,,,,20,20,15,5,,,
+60,6,flailed,control,35,65,,,,,,,,,,,,,,,,,,,,,,,
+60,6,unmanaged,annuals,10,5,3,0,25,10,80,6,2,0,,,,,,,,,,,,,,,
+60,6,unmanaged,perennials,10,45,,,,,,,,,30,50,6,25,15,0,2,2,,,,,,,
+60,6,unmanaged,megamix,15,40,,,,,,,,,,,,,,,,,,,,,60,20,
+60,6,unmanaged,control,5,95,,,,,,,,,,,,,,,,,,,,,,,
+60,5,scraped,annuals,15,5,3,10,30,18,50,10,6,0,,,,,,,,,,,,,,,
+60,5,scraped,perennials,,,,,,,,,,,70,55,20,5,35,0,1,3,,,,,,,
+60,5,scraped,industry,8,80,,,,,,,,,,,,,,,,,5,45,5,3,,,
+60,5,scraped,control,6,94,,,,,,,,,,,,,,,,,,,,,,,
+60,5,flailed,annuals,3,5,5,15,60,30,50,6,2,2,,,,,,,,,,,,,,,
+60,5,flailed,perennials,7,15,,,,,,,,,75,50,30,10,35,0,2,4,,,,,,,
+60,5,flailed,industry,10,60,,,,,,,,,,,,,,,,,25,45,10,3,,,
+60,5,flailed,control,6,94,,,,,,,,,,,,,,,,,,,,,,,
+60,5,unmanaged,annuals,20,5,1,2,10,4,75,4,1,1,,,,,,,,,,,,,,,
+60,5,unmanaged,perennials,8,65,,,,,,,,,10,30,8,10,10,0,0,1,,,,,,,
+60,5,unmanaged,megamix,6,90,,,,,,,,,,,,,,,,,,,,,15,5,rotten annuals
+60,5,unmanaged,control,3,97,,,,,,,,,,,,,,,,,,,,,,,
+60,4,scraped,annuals,5,3,10,15,40,30,25,15,1,0,,,,,,,,,,,,,,,
+60,4,scraped,perennials,4,8,,,,,,,,,70,40,15,5,18,0,0,3,,,,,,,
+60,4,scraped,industry,10,30,,,,,,,,,,,,,,,,,45,25,10,5,,,
+60,4,scraped,control,15,85,,,,,,,,,,,,,,,,,,,,,,,
+60,4,flailed,annuals,10,5,5,3,40,20,70,7,2,0,,,,,,,,,,,,,,,
+60,4,flailed,perennials,8,40,,,,,,,,,40,45,15,10,10,0,0,3,,,,,,,
+60,4,flailed,industry,20,50,,,,,,,,,,,,,,,,,4,30,12,10,,,
+60,4,flailed,control,15,85,,,,,,,,,,,,,,,,,,,,,,,
+60,4,unmanaged,annuals,20,10,1,5,10,3,20,1,2,1,,,,,,,,,,,,,,,
+60,4,unmanaged,perennials,10,75,,,,,,,,,10,40,10,2,4,0,0,1,,,,,,,
+60,4,unmanaged,megamix,10,50,,,,,,,,,,,,,,,,,,,,,35,8,
+60,4,unmanaged,control,10,90,,,,,,,,,,,,,,,,,,,,,,,
+60,3,scraped,annuals,5,2,0,7,50,35,80,12,4,1,,,,,,,,,,,,,,,
+60,3,scraped,perennials,10,15,,,,,,,,,60,50,10,4,20,0,2,3,,,,,,,
+60,3,scraped,industry,15,55,,,,,,,,,,,,,,,,,5,15,15,5,,,
+60,3,scraped,control,10,90,,,,,,,,,,,,,,,,,,,,,,,
+60,3,flailed,annuals,8,3,2,12,60,25,70,5,5,1,,,,,,,,,,,,,,,
+60,3,flailed,perennials,5,20,,,,,,,,,65,70,15,12,30,0,1,6,,,,,,,
+60,3,flailed,industry,40,60,,,,,,,,,,,,,,,,,10,5,3,2,,,
+60,3,flailed,control,25,75,,,,,,,,,,,,,,,,,,,,,,,
+60,3,unmanaged,annuals,3,75,2,1,40,20,35,8,2,0,,,,,,,,,,,,,,,
+60,3,unmanaged,perennials,1,90,,,,,,,,,5,15,2,3,6,0,0,0,,,,,,,
+60,3,unmanaged,megamix,2,95,,,,,,,,,,,,,,,,,,,,,40,5,
+60,3,unmanaged,control,0,100,,,,,,,,,,,,,,,,,,,,,,,
+60,2,scraped,annuals,7,2,0,1,50,40,70,10,7,4,,,,,,,,,,,,,,,
+60,2,scraped,perennials,15,10,,,,,,,,,60,70,15,35,45,0,2,15,,,,,,,
+60,2,scraped,industry,40,20,,,,,,,,,,,,,,,,,30,30,15,3,,,
+60,2,scraped,control,40,60,,,,,,,,,,,,,,,,,,,,,,,
+60,2,flailed,annuals,12,2,,1,70,25,80,15,2,0,,,,,,,,,,,,,,,
+60,2,flailed,perennials,10,25,,,,,,,,,10,75,3,15,25,0,0,3,,,,,,,
+60,2,flailed,industry,25,70,,,,,,,,,,,,,,,,,8,18,10,3,,,
+60,2,flailed,control,20,80,,,,,,,,,,,,,,,,,,,,,,,
+60,2,unmanaged,annuals,8,2,0,1,80,60,80,15,7,2,,,,,,,,,,,,,,,
+60,2,unmanaged,perennials,10,42,,,,,,,,,35,70,7,15,30,0,3,2,,,,,,,
+60,2,unmanaged,megamix,15,,,,,,,,,,,,,,,,,,,,,,85,10,
+60,2,unmanaged,control,30,70,,,,,,,,,,,,,,,,,,,,,,,
+60,1,scraped,annuals,,1,3,5,40,30,80,15,5,5,,,,,,,,,,,,,,,
+60,1,scraped,perennials,2,10,,,,,,,,,70,55,60,4,20,0,0,0,,,,,,,
+60,1,scraped,industry,15,5,,,,,,,,,,,,,,,,,42,42,40,2,,,
+60,1,scraped,control,30,70,,,,,,,,,,,,,,,,,,,,,,,
+60,1,flailed,annuals,12,1,2,0,40,25,80,15,2,0,,,,,,,,,,,,,,,
+60,1,flailed,perennials,45,4,,,,,,,,,40,50,30,7,15,0,3,2,,,,,,,
+60,1,flailed,industry,10,2,,,,,,,,,,,,,,,,,40,35,30,2,,,
+60,1,flailed,control,35,65,,,,,,,,,,,,,,,,,,,,,,,
+60,1,unmanaged,annuals,5,1,35,8,35,55,65,3,0,0,,,,,,,,,,,,,,,
+60,1,unmanaged,perennials,25,7,,,,,,,,,70,80,45,20,40,1,1,3,,,,,,,
+60,1,unmanaged,megamix,10,5,,,,,,,,,,,,,,,,,,,,,90,10,
+60,1,unmanaged,control,50,50,,,,,,,,,,,,,,,,,,,,,,,

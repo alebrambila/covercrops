@@ -33,28 +33,32 @@ calcSE<-function(x){
 
 ggplot(data=subset(moisture20, seedmix=="control"), aes(x=week, y=moisture, color=management)) + 
   geom_point()+
-  geom_line(aes(group=interaction(block, management)))+
-  facet_wrap(~age)+
+  geom_line(aes(group=interaction(block,management)))+
+  facet_wrap(~age)
   labs(x="day", y="Soil % Water by Volume")+
-  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"), 
+  #scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"), 
                      name="Orchard Floor \nManagement",
                      breaks=c("None", "Flailed", "Scraped"),
-                     labels=c("No Management", "Summer Flailing", "Summer Flailing \nand Scraping"))
+                     #labels=c("No Management", "Summer Flailing", "Summer Flailing \nand Scraping"))
 
+  ggplot(data=subset(moisture20), aes(x=week, y=moisture, color=seedmix)) + 
+    geom_point()+
+    geom_line(aes(group=interaction(block,seedmix,management)))+
+    facet_wrap(~age)
+  labs(x="day", y="Soil % Water by Volume")+
 
 #get means and standard error to simplify weekly plot
 m20_agg<-moisture20%>%
   group_by( age, week ,seedmix)%>%
-  summarize(mean_moisture=mean(moisture),
-            se_moisture=calcSE(moisture))
+  summarize(mean_moisture=mean(moisture))
 
-#controls by management
-ggplot(data=subset(m20_agg, seedmix=="control"), aes(x=week, y=mean_moisture)) + facet_grid(~age)+
+#seedmixes
+ggplot(data=subset(m20_agg), aes(x=week, y=mean_moisture, color=seedmix)) + facet_grid(~age)+
   geom_point()+
   geom_line()+
-  geom_errorbar(aes(ymin=mean_moisture-se_moisture, ymax=mean_moisture+se_moisture), width=.2)+
- labs(x="week", y="Soil % Water by Volume")+
-  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"), )+scale_x_continuous(breaks=c(4, 5, 6))
+ # geom_errorbar(aes(ymin=mean_moisture-se_moisture, ymax=mean_moisture+se_moisture), width=.2)+
+ labs(x="week", y="Soil % Water by Volume")
+  #scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"), )+scale_x_continuous(breaks=c(4, 5, 6))
                
 ################################################################################################################
 ##### 2020 moisture~age*management stats
@@ -72,12 +76,13 @@ TukeyHSD(aov(moisture_loss~management, data = subset(mmloss1, age=="40 years old
 m20_agg$seedmix=factor(m20_agg$seedmix, levels=c("annuals", "perennials", "megamix", "industry", "control"))
 
 #seedmixes compared (PUBLICATION).. add in amount of rain in each week. 
-m20<-ggplot(data=subset(m20_agg), aes(x=week, y=mean_moisture, color=seedmix)) + facet_grid(~age)+
+ggplot(data=subset(m20_agg, seedmix!="megamix"), aes(x=week, y=mean_moisture, color=seedmix)) +
+  facet_wrap(~age, scales="free")+  scale_y_continuous(limits=c(5,47))+ theme(axis.line=element_line())+
   geom_point()+
   geom_line()+
   geom_errorbar(aes(ymin=mean_moisture-se_moisture, ymax=mean_moisture+se_moisture), width=.2)+
   labs(x="week", y="Soil % Water by Volume")+theme(axis.text.x=element_text(color = "black", angle=30, vjust=.8, hjust=0.8))+
-  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black"), )+scale_x_continuous(breaks=c(1, 2, 3, 4, 5, 6), labels=c("04.07.2020","", "04.24.2020", "05.01.2020", "05.10.2020", "05.17.2020"))
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9", "darkred", "black", "grey30", "grey50", "grey70"), )+scale_x_continuous(breaks=c(1, 2, 3, 4, 5, 6), labels=c("april 7","", "april 24", "may 1", "may 10", "may 17"))
 
 moisture20_consolidated<-moisture20%>%
   mutate(management=ifelse(management=="Flailed"|management=="Scraped", "Managed", "Unmanaged"))
