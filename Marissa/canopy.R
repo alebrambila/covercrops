@@ -1,3 +1,5 @@
+library(tidyverse)
+library(dplyr)
 # canopy cover
 canopy<-read_csv("canopy_cover.csv")%>%
   #weighted adjustment for blocks 4-6 of 15 that are shaded by xmas trees
