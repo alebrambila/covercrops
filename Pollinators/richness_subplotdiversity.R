@@ -73,20 +73,31 @@ pollinatorsubplotrichness <- collectedpollinators %>%
   mutate(pollinatorrichness=length(unique(Genus)))
 
 ## I'll do a test to make sure that it's counting up the unique genera correctly. Looks like its working!
-testsubplot <- pollinatorsubplotrichness %>%
+testpollinatorsubplot <- pollinatorsubplotrichness %>%
   filter(Orchard.Age == 15, Block == 2, Management == "flail")
 
 ## Next, I want to do the same thing but for floral species richness.
 ## I want to again group by subplot, but then select the species of plants that were producing flowers
 ## (in the flowering, first flower, or last flower category) and then find the total number of unique
 ## flowering species.
+## I also want to rename some columns so that they match the pollinator dataset,
+## and rename the management values so that they match up with the pollinator dataset
 
 plantsubplotrichness <- phenologyclean %>%
-  group_by(orchardage, block, management, date) %>%
-  mutate(plantrichness=ifelse(flowering > 0, length(unique(species))))
+  filter(firstflower==1|flowering==1|lastflower==1)%>%
+  group_by(orchardage, block, management, date)%>%
+  summarize(richness=length(unique(species))) %>%
+  mutate(management=ifelse(management=="flailed", "flail", management)) %>%
+  mutate(management=ifelse(management=="scraped", "flailscrape", management)) %>%
+  mutate(date=ifelse(date=="4", "april", date))
+
+names(plantsubplotrichness) <- c ("Orchard.Age", "Block",
+                                  "Management", "Month", "richness")
 
 #############################
 #############################
 
 ## Graphing
 ## I want to compare x = subplot floral diversity; y = subplot pollinator richness
+## First, I'll want to join the plant & pollinator subplot richness datasets by 
+## orchard age, block, management, and month (date)
