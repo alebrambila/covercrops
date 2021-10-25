@@ -173,7 +173,7 @@ phenology_long$orchardage<-factor(phenology_long$orchardage, levels=c("15", "60"
 
 
 phenology_xl<-phenology_long%>%
-  select(-count, -total)%>%
+  dplyr::select(-count, -total)%>%
   gather(stage, proportion, 5:11)
 
 phenology_xl$stage<-factor(phenology_xl$stage, levels=c("seedling", "vegetative", "flowering", "fruit","postflowerveg",  "senesence", "flailed", "scraped", "regrowth"))
