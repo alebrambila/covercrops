@@ -12,10 +12,27 @@ library(dplyr)
 ## Import data
 ## Clean up column names and columns
 
-collectedpollinators <- read.csv("collectedpollinators_combined.csv")
-names(collectedpollinators) <- c ("Year","Day", "Month", "Orchard.Age", "Block",
-                                  "Management", "Seed.Mix", "Host.Plant", "Order", "Genus", "Notes", 
-                                  "Weed.Id", "Count")
+
+#add in a full plot list to account for zeroes
+plots <- read.csv("canopy_cover.csv")%>%
+  filter(year==2021)%>% #have to do this here
+  mutate(seedmix=ifelse(seedmix=="annuals", "annual", ifelse(seedmix=="perennials", "perennial", seedmix)))%>%
+  dplyr::select(1:4)
+names(plots) <- c("Orchard.Age", "Block", "Management", "Seed.Mix")
+
+
+collectedpollinators <- read.csv("collectedpollinators_combined.csv")%>%
+  mutate(Management=ifelse(Management=="flailscrape"|Management=="scraped", "scraped", ifelse(Management=="flail"|Management=="flailed", "flailed", "unmanaged")))%>%
+  mutate(Seed.Mix=ifelse(Seed.Mix=="annuals"|Seed.Mix=="annual", "annual", ifelse(Seed.Mix=="perennials"|Seed.Mix=="perennial", "perennial", Seed.Mix)))%>%
+  group_by(Year, Orchard.Age, Block, Management, Seed.Mix, Host.Plant, Order, Genus)%>%
+  summarize(Count=sum(Count))
+seedmix.rich<-collectedpollinators%>% #this is just the richness in each plot (ignoring what the species is)
+  ungroup()%>%
+  group_by(Orchard.Age, Block, Management, Seed.Mix)%>%
+ summarize(richness=length(unique(Genus)))
+seedmix.rich<-full_join(plots, seedmix.rich)%>%
+  mutate(richness=ifelse(is.na(richness), 0, richness))
+
 #############################
 #############################
 
@@ -38,15 +55,35 @@ perennialspecies <- c("achillea", "agoseris", "lomatium", "potentilla",
 
 industryspecies <- c("barley", "oats", "vetch", "clover")
 
-taxonomicrichness <- collectedpollinators %>%
-  select(Genus, Host.Plant) %>%
-  mutate(seedmix=ifelse(Host.Plant==perennialspecies, "perennial",
-                        ifelse(Host.Plant==annualspecies, "annual", 
-                               ifelse(Host.Plant==industryspecies, "industry", 
-                                      ifelse(Host.Plant=="weed","control", Host.Plant)))))
-  
+taxonomicrichness<-collectedpollinators%>% #this is just the richness in each plot (ignoring what the species is)
+  mutate(seedmix2=ifelse(Host.Plant%in%perennialspecies, "perennial",
+                         ifelse(Host.Plant%in%annualspecies, "annual", 
+                                ifelse(Host.Plant%in%industryspecies, "industry", 
+                                       ifelse(Host.Plant=="weed","weed", Host.Plant)))))%>%
+  ungroup()%>%
+  group_by(Orchard.Age, Block, Management, seedmix2)%>%
+  summarize(richness=length(unique(Genus)))
+
+newplots<-plots%>%  #convert to species types
+  mutate(seedmix2=ifelse(Seed.Mix=="control", "weed", Seed.Mix))%>%
+  dplyr::select(-Seed.Mix)
+
+taxonomicrichness<-full_join(newplots, taxonomicrichness)%>% #need zeroes
+  mutate(richness=ifelse(is.na(richness), 0, richness))
+
+
+
 #############################
 #############################
 
 ## Plot
 ## I want to do a box plot with error bars
+
+#version 1: the actual seedmix
+ggplot(subset(seedmix.rich, Seed.Mix!="megamix"), aes(x=Seed.Mix, y=richness))+geom_boxplot()+ #how did megamix get in here?
+  facet_wrap(~Orchard.Age)
+
+#version 2: based on species type
+ggplot(subset(taxonomicrichness, seedmix2!="megamix"), aes(x=seedmix2, y=richness))+geom_boxplot()+ #how did megamix get in here?
+  facet_wrap(~Orchard.Age)
+
