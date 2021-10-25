@@ -34,7 +34,7 @@ canopyvisits <- merge(x=observedpollinators, y=canopycover,by=c("Orchard.Age","B
 
 ## Plot
 
-ggplot(canopyvisits, aes(x=Canopy, y=Number, colour=Orchard.Age)) +
+ggplot(canopyvisits, aes(x=Canopy, y=Number, colour=as.factor(Orchard.Age))) +
   geom_point() +
   labs(x="Canopy Cover", y = "Insect Visitations") +
   stat_smooth()
@@ -46,6 +46,10 @@ ggplot(canopyvisits, aes(x=Canopy, y=Number, colour=Orchard.Age)) +
 ## I'm using a mixed model. 'lme' uses t-tests and f-tests to find the significance between
 ## canopy cover and insect visits. Canopy cover is a random effect.
 
-mmcanopy<-lme(Number~Canopy, random = ~1|Canopy, data = canopyvisits, na.action=na.omit)
+mmcanopy<-lme(Number~Canopy, random = ~1|Orchard.Age, data = canopyvisits, na.action=na.omit)
+summary(mmcanopy)
+anova(mmcanopy)
+
+mmcanopy<-lme(Number~Canopy, random = ~1|Block/Orchard.Age, data = canopyvisits, na.action=na.omit)
 summary(mmcanopy)
 anova(mmcanopy)
