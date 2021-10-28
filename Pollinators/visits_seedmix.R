@@ -59,18 +59,30 @@ taxonomicobservations<-observedpollinators%>%
   group_by(Orchard.Age, Block, Management, Morphospecies, seedmix2)%>%
   summarise(Number = sum(Number))
 
+#add in a full plot list to account for zeroes
+plots <- read.csv("canopy_cover.csv")%>%
+  filter(year==2021)%>% #have to do this here
+  mutate(seedmix=ifelse(seedmix=="annuals", "annual", ifelse(seedmix=="perennials", "perennial", seedmix)))%>%
+  dplyr::select(1:4)
+names(plots) <- c("Orchard.Age", "Block", "Management", "Seed.Mix")
+
 newplots<-plots%>%  #convert to species types
   mutate(seedmix2=ifelse(Seed.Mix=="control", "weed", Seed.Mix))%>%
   dplyr::select(-Seed.Mix)
 
-##taxonomicobservations<-full_join(newplots, taxonomicobservations)%>% #need zeroes
- ## mutate(Number=ifelse(is.na(Number), 0, Number)) %>%
- ## mutate(Morphospecies=ifelse(is.na(Morphospecies), 0, Morphospecies))
+taxonomicobservations<-full_join(newplots, taxonomicobservations)%>% #need zeroes
+ mutate(Number=ifelse(is.na(Number), 0, Number))
 
 ggplot(taxonomicobservations, aes(fill=Morphospecies, x=seedmix2)) + 
   geom_bar(stat="count", position="stack") +
   theme(axis.text.x = element_text(angle=65, vjust=0.6)) +
   labs(x="Seed Mix", y="Pollinator Visitation")
+
+ggplot(seedmixmeans2, aes(x=seedmix2, y=Number)) +
+  geom_boxplot(aes(fill=as.factor(Orchard.Age)))
+
+ggplot(seedmixmeans2, aes(x=as.factor(Orchard.Age), y=Number)) +
+  geom_boxplot(aes(fill=as.factor(seedmix2)))
 
 #############################
 #############################
@@ -113,3 +125,11 @@ tukey2 <- TukeyHSD(aov, conf.level=.95)
 
 ## When examining observations by plant species, there is a significant difference between
 ## perennials and annuals, and perennials and weeds
+
+#############################
+#############################
+## Statistics for 'taxonomicobservations'
+## Including orchard age
+
+aovorchard <- aov(Number~seedmix2*as.factor(Orchard.Age), data=seedmixmeans2)
+tukey3 <- TukeyHSD(aovorchard, conf.level=.95)
