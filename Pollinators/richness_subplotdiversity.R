@@ -101,3 +101,6 @@ names(plantsubplotrichness) <- c ("Orchard.Age", "Block",
 ## I want to compare x = subplot floral diversity; y = subplot pollinator richness
 ## First, I'll want to join the plant & pollinator subplot richness datasets by 
 ## orchard age, block, management, and month (date)
+
+
+##LINE 496
