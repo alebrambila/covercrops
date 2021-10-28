@@ -20,8 +20,12 @@ plots <- read.csv("canopy_cover.csv")%>%
   dplyr::select(1:4)
 names(plots) <- c("Orchard.Age", "Block", "Management", "Seed.Mix")
 
+collectedpollinators_combined <- read.csv("collectedpollinators_combined.csv")
+names(collectedpollinators_combined) <- c("Year", "Day","Month", "Orchard.Age","Block","Management",
+                                          "Seed.Mix","Host.Plant","Order","Genus", "Notes",
+                                          "Weed.ID", "Count")
 
-collectedpollinators <- read.csv("collectedpollinators_combined.csv")%>%
+collectedpollinators <- collectedpollinators_combined%>%
   mutate(Management=ifelse(Management=="flailscrape"|Management=="scraped", "scraped", ifelse(Management=="flail"|Management=="flailed", "flailed", "unmanaged")))%>%
   mutate(Seed.Mix=ifelse(Seed.Mix=="annuals"|Seed.Mix=="annual", "annual", ifelse(Seed.Mix=="perennials"|Seed.Mix=="perennial", "perennial", Seed.Mix)))%>%
   group_by(Year, Orchard.Age, Block, Management, Seed.Mix, Host.Plant, Order, Genus)%>%
@@ -84,6 +88,26 @@ ggplot(subset(seedmix.rich, Seed.Mix!="megamix"), aes(x=Seed.Mix, y=richness))+g
   facet_wrap(~Orchard.Age)
 
 #version 2: based on species type
-ggplot(subset(taxonomicrichness, seedmix2!="megamix"), aes(x=seedmix2, y=richness))+geom_boxplot()+ #how did megamix get in here?
+ggplot(subset(taxonomicrichness, seedmix2!="megamix"), aes(x=seedmix2, y=richness))+geom_boxplot() ##+ #how did megamix get in here?
   facet_wrap(~Orchard.Age)
 
+
+#############################
+#############################
+## Statistics
+## I want to do a similar stat test (anova and Tukey) to what I did for visitations to see
+## if there's statistically significant differences in richness between seed mixes.
+
+seedmixrichnessmeans<-taxonomicrichness%>%
+ungroup()%>%
+    group_by(Orchard.Age, Block, seedmix2)
+  
+aov <- aov(richness~seedmix2, data=seedmixrichnessmeans)
+summary(aov)
+
+## issue -- megamix shouldn't be in here; it's all zeroes
+  
+tukey <- TukeyHSD(aov, conf.level=.95)
+
+## there is a statistically significant difference between perennials and industry, and
+## perennials and weeds

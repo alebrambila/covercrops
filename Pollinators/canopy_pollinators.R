@@ -34,10 +34,13 @@ names(canopycover) <- c("Orchard.Age", "Block", "Management", "Seed.Mix", "Canop
 ## orchard age variable in there so that I can see if that has an effect (since canopy
 ## cover tended to vary with age)
 ## I also want to filter out 2020 data, since pollinators were only collected in 2021
+#why? canopy is at the seeding plot level
+#A: Maybe I can just select for canopy instead? I just want to include the canopy values in the
+#'canopyvisits' dataset for the plot
 
 canopyvisits <- full_join(observedpollinators, canopycover) %>%
-  mutate(Number=ifelse(is.na(Number), 0, Number))#%>%
-  group_by(Orchard.Age, Block, Canopy) %>% #why? canopy is at the seeding plot level
+  mutate(Number=ifelse(is.na(Number), 0, Number))%>%
+  group_by(Orchard.Age, Block, Canopy) %>% 
   summarise(Number = sum(Number))
 
 ## Plot
@@ -60,4 +63,6 @@ anova(mmcanopy)
 
 mmcanopy<-lme(Number~Seed.Mix+Canopy, random = ~1|Block/Orchard.Age, data = canopyvisits, na.action=na.omit)
 summary(mmcanopy)
-anova(mmcanopy) #seed mix yes, canopy no
+anova(mmcanopy) 
+#seed mix yes, canopy no
+#question: is the reported p-value for canopy 0.5795 (not significant)?
