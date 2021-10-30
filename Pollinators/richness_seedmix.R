@@ -88,8 +88,9 @@ ggplot(subset(seedmix.rich, Seed.Mix!="megamix"), aes(x=Seed.Mix, y=richness))+g
   facet_wrap(~Orchard.Age)
 
 #version 2: based on species type
-ggplot(subset(taxonomicrichness, seedmix2!="megamix"), aes(x=seedmix2, y=richness))+geom_boxplot() ##+ #how did megamix get in here?
-  facet_wrap(~Orchard.Age)
+ggplot(subset(taxonomicrichness, seedmix2!="megamix"), aes(x=seedmix2, y=richness))+
+  geom_boxplot(aes(fill=as.factor(Orchard.Age))) +
+  labs(x="Seed Mix", y="Taxonomic Richness")
 
 
 #############################

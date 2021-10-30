@@ -82,7 +82,8 @@ ggplot(seedmixmeans2, aes(x=seedmix2, y=Number)) +
   geom_boxplot(aes(fill=as.factor(Orchard.Age)))
 
 ggplot(seedmixmeans2, aes(x=as.factor(Orchard.Age), y=Number)) +
-  geom_boxplot(aes(fill=as.factor(seedmix2)))
+  geom_boxplot(aes(fill=as.factor(seedmix2))) +
+  labs(x="Seed Mix", y="Pollinator Visitation")
 
 #############################
 #############################
