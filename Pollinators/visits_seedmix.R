@@ -78,11 +78,13 @@ ggplot(taxonomicobservations, aes(fill=Morphospecies, x=seedmix2)) +
   theme(axis.text.x = element_text(angle=65, vjust=0.6)) +
   labs(x="Seed Mix", y="Pollinator Visitation")
 
-ggplot(seedmixmeans2, aes(x=seedmix2, y=Number)) +
-  geom_boxplot(aes(fill=as.factor(Orchard.Age)))
+ggplot(subset(taxonomicobservations, seedmix2!="megamix"), aes(x=seedmix2, y=Number)) +
+  geom_boxplot(aes(fill=as.factor(Orchard.Age))) +
+  labs(x="Seed Mix", y="Pollinator Visitation")
 
-ggplot(seedmixmeans2, aes(x=as.factor(Orchard.Age), y=Number)) +
-  geom_boxplot(aes(fill=as.factor(seedmix2)))
+ggplot(subset(taxonomicobservations, seedmix2!="megamix"), aes(x=as.factor(Orchard.Age), y=Number)) +
+  geom_boxplot(aes(fill=as.factor(seedmix2))) +
+  labs(x="Seed Mix", y="Pollinator Visitation")
 
 #############################
 #############################
