@@ -184,12 +184,47 @@ ggplot()+
 ## Floral abundance mixed model: 'lme' uses t-tests and f-tests to find the significance between
 ## month and floral abundance within each orchard age. Orchard age is a random effect.
 
-mmfloralphenology<-lme(flor~numericmonth, random =  ~1|orchard_age, data=phenflorsum1) 
-summary(mmfloralphenology)
-anova(mmfloralphenology)
+# I did a separate model for each orchard age, so you no longer need the effect of orchard age in the model. 
+# managment is random because we are controlling for its effect. 
+mmfloralphenology.15<-lme(flor~numericmonth, random =  ~1|management, data=subset(phenflorsum1, orchard_age==15)) 
+library(lsmeans)
+lsmeans(mmfloralphenology.15,
+                      pairwise ~ numericmonth,
+                      adjust="tukey") # p-vals show you differences between different groups: ex. youcan see 6 is significantly different fron all others
+
+mmfloralphenology.40<-lme(flor~numericmonth, random =  ~1|management, data=subset(phenflorsum1, orchard_age==40)) 
+lsmeans(mmfloralphenology.40,
+        pairwise ~ numericmonth,
+        adjust="tukey")
+
+mmfloralphenology.60<-lme(flor~numericmonth, random =  ~1|management, data=subset(phenflorsum1, orchard_age==60 )) 
+lsmeans(mmfloralphenology.60,
+        pairwise ~ numericmonth,
+        adjust="tukey") #as expected here month 6 and 5 are not sig different, 
+
 
 ## Pollinator abundance mixed model
 
-mmpollinatorphenology<-lme(abundance~numericmonth, random =  ~1|orchard_age, data=op3) 
+mmpollinatorphenology<-lme(abundance~as.factor(numericmonth), random =  ~1|orchard_age, data=op3) 
 summary(mmpollinatorphenology)
-anova(mmpollinatorphenology)
+anova(mmpollinatorphenology)# now its significant, for some reason it had to be a factor here (which it is). I think what was happening was that it was trying for a linear relationship with the numbers which didnt fit since it's a hump. 
+
+#break apart by orchard
+mmpollinatorphenology.15<-lme(abundance~as.factor(numericmonth), random =  ~1|management, data=subset(op3, orchard_age==15)) 
+summary(mmpollinatorphenology.15)
+lsmeans(mmpollinatorphenology.15,
+        pairwise ~ numericmonth,
+        adjust="tukey") #showing significant pairings now
+
+mmpollinatorphenology.40<-lme(abundance~as.factor(numericmonth), random =  ~1|management, data=subset(op3, orchard_age==40)) 
+summary(mmpollinatorphenology.40)
+lsmeans(mmpollinatorphenology.40,
+        pairwise ~ numericmonth,
+        adjust="tukey") 
+
+mmpollinatorphenology.60<-lme(abundance~as.factor(numericmonth), random =  ~1|management, data=subset(op3, orchard_age==60)) 
+summary(mmpollinatorphenology.60)
+lsmeans(mmpollinatorphenology.60,
+        pairwise ~ numericmonth,
+        adjust="tukey") 
+
