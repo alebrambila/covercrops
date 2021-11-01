@@ -112,3 +112,37 @@ tukey <- TukeyHSD(aov, conf.level=.95)
 
 ## there is a statistically significant difference between perennials and industry, and
 ## perennials and weeds
+
+#############################
+#############################
+## Statistics
+## I also want to test if there's differences in richness within each orchard age
+
+aovrichnessorchards <- aov(richness~seedmix2*as.factor(Orchard.Age), data=seedmixrichnessmeans)
+tukey2 <- TukeyHSD(aovrichnessorchards, conf.level=.95)
+
+#############################
+#############################
+## Statistics
+## There's significance between the perennial seed mix and all other seed mixes in both the 15 year and 60 year orchards,
+## so I'm going to test if there are any significant differences between species
+## within the perennial seed mix.
+
+perennialrichness<-collectedpollinators%>%
+  mutate(seedmix2=ifelse(Host.Plant%in%perennialspecies, "perennial",
+                         ifelse(Host.Plant%in%annualspecies, "annual", 
+                                ifelse(Host.Plant%in%industryspecies, "industry", 
+                                       ifelse(Host.Plant=="weed","weed", Host.Plant)))))%>%
+  ungroup()%>%
+  group_by(Orchard.Age, Block, Host.Plant, seedmix2)%>%
+  summarize(richness=length(unique(Genus)))%>%
+  filter(seedmix2 == "perennial")
+
+## Stat tests
+aovperennialrichness <- aov(richness~Host.Plant, data=perennialrichness)
+tukey3 <- TukeyHSD(aovperennialrichness, conf.level=.95)
+
+## No significance between species across all orchard ages, so I'll look at it within 
+## each orchard age:
+aovperennialrichorchard <- aov(richness~Host.Plant*as.factor(Orchard.Age), data=perennialrichness)
+tukey4 <- TukeyHSD(aovperennialrichorchard, conf.level=.95)
