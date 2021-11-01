@@ -82,10 +82,6 @@ ggplot(subset(taxonomicobservations, seedmix2!="megamix"), aes(x=seedmix2, y=Num
   geom_boxplot(aes(fill=as.factor(Orchard.Age))) +
   labs(x="Seed Mix", y="Pollinator Visitation")
 
-ggplot(subset(taxonomicobservations, seedmix2!="megamix"), aes(x=as.factor(Orchard.Age), y=Number)) +
-  geom_boxplot(aes(fill=as.factor(seedmix2))) +
-  labs(x="Seed Mix", y="Pollinator Visitation")
-
 #############################
 #############################
 ## Statistics
@@ -135,3 +131,30 @@ tukey2 <- TukeyHSD(aov, conf.level=.95)
 
 aovorchard <- aov(Number~seedmix2*as.factor(Orchard.Age), data=seedmixmeans2)
 tukey3 <- TukeyHSD(aovorchard, conf.level=.95)
+
+#############################
+#############################
+## Statistics for plants within the perennial seed mix
+## From tukey2 and tukey3, it's clear that there's a significant
+## difference in pollinator visitations to the species in the perennial seed mix
+## as compared to the other seed mixes. So, I'm going to compare the individual
+## species to see what stands out.
+
+## Creating the data set for this:
+perennialmeans <- observedpollinators%>%
+  mutate(seedmix2=ifelse(Host.Plant%in%perennialspecies, "perennial",
+                         ifelse(Host.Plant%in%annualspecies, "annual", 
+                                ifelse(Host.Plant%in%industryspecies, "industry", 
+                                       ifelse(Host.Plant=="weed","weed", Host.Plant)))))%>%
+  ungroup()%>%
+  group_by(Orchard.Age, Block, seedmix2, Host.Plant)%>%
+  summarise(Number = sum(Number)) %>%
+  filter(seedmix2 == "perennial")
+
+## Stat tests
+aovperennials <- aov(Number~Host.Plant, data=perennialmeans)
+tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
+
+## Nothing stands out as significant, so I'll do another test within orchard ages
+aovperennialorchard <- aov(Number~Host.Plant*as.factor(Orchard.Age), data=perennialmeans)
+tukey5 <- TukeyHSD(aovperennialorchard, conf.level=.95)
