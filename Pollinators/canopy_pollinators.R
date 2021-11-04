@@ -40,7 +40,7 @@ names(canopycover) <- c("Orchard.Age", "Block", "Management", "Seed.Mix", "Canop
 
 canopyvisits <- full_join(observedpollinators, canopycover) %>%
   mutate(Number=ifelse(is.na(Number), 0, Number))%>%
-  group_by(Orchard.Age, Block, Canopy) %>% 
+  group_by(Orchard.Age, Block, Canopy, Seed.Mix) %>% 
   summarise(Number = sum(Number))
 
 ## Plot
@@ -61,8 +61,12 @@ mmcanopy<-lme(Number~Canopy, random = ~1|Block/Orchard.Age, data = canopyvisits,
 summary(mmcanopy)
 anova(mmcanopy)
 
-mmcanopy<-lme(Number~Seed.Mix+Canopy, random = ~1|Block/Orchard.Age, data = canopyvisits, na.action=na.omit)
-summary(mmcanopy)
-anova(mmcanopy) 
+mmcanopy2<-lme(Number~Seed.Mix+Canopy, random = ~1|Block/Orchard.Age, data = canopyvisits, na.action=na.omit)
+summary(mmcanopy2)
+anova(mmcanopy2) 
 #seed mix yes, canopy no
-#question: is the reported p-value for canopy 0.5795 (not significant)?
+
+## testing canopy cover by orchard age
+mmcanopy3<-lme(Number~Orchard.Age+Canopy, random = ~1|Block/Orchard.Age, data = canopyvisits, na.action=na.omit)
+summary(mmcanopy3)
+anova(mmcanopy3)
