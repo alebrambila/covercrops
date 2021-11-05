@@ -50,6 +50,11 @@ ggplot(canopyvisits, aes(x=Canopy, y=Number, colour=as.factor(Orchard.Age))) +
   labs(x="Canopy Cover", y = "Insect Visitations") +
   stat_smooth()
 
+ggplot(canopyvisits, aes(x=Canopy, y=Number)) +
+  geom_point(aes(colour=as.factor(Orchard.Age))) +
+  labs(x="Canopy Cover", y = "Insect Visitations") +
+  stat_smooth(method="lm")
+
 #############################
 #############################
 
@@ -57,9 +62,11 @@ ggplot(canopyvisits, aes(x=Canopy, y=Number, colour=as.factor(Orchard.Age))) +
 ## I'm using a mixed model. 'lme' uses t-tests and f-tests to find the significance between
 ## canopy cover and insect visits. Canopy cover is a random effect.
 
-mmcanopy<-lme(Number~Canopy, random = ~1|Block/Orchard.Age, data = canopyvisits, na.action=na.omit)
+mmcanopy<-lme(Number~Canopy, random = ~1|Block, data = canopyvisits, na.action=na.omit)
 summary(mmcanopy)
 anova(mmcanopy)
+## When effect of orchard age is removed, significant.
+## Because orchard age is strongly tied to canopy
 
 mmcanopy2<-lme(Number~Seed.Mix+Canopy, random = ~1|Block/Orchard.Age, data = canopyvisits, na.action=na.omit)
 summary(mmcanopy2)
@@ -67,6 +74,6 @@ anova(mmcanopy2)
 #seed mix yes, canopy no
 
 ## testing canopy cover by orchard age
-mmcanopy3<-lme(Number~Orchard.Age+Canopy, random = ~1|Block/Orchard.Age, data = canopyvisits, na.action=na.omit)
+mmcanopy3<-lme(Canopy~Orchard.Age, random = ~1|Block, data = canopyvisits, na.action=na.omit)
 summary(mmcanopy3)
 anova(mmcanopy3)
