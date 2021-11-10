@@ -80,7 +80,7 @@ ggplot(taxonomicobservations, aes(fill=Morphospecies, x=seedmix2)) +
 
 ggplot(subset(taxonomicobservations, seedmix2!="megamix"), aes(x=seedmix2, y=Number)) +
   geom_boxplot(aes(fill=as.factor(Orchard.Age))) +
-  labs(x="Seed Mix", y="Pollinator Visitation")
+  labs(x="Host Plant Groups", y="Pollinator Visitation (per management plot)")
 
 #############################
 #############################

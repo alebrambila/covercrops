@@ -47,12 +47,12 @@ canopyvisits <- full_join(observedpollinators, canopycover) %>%
 
 ggplot(canopyvisits, aes(x=Canopy, y=Number, colour=as.factor(Orchard.Age))) +
   geom_point() +
-  labs(x="Canopy Cover", y = "Insect Visitations") +
+  labs(x="Canopy Cover", y = "Insect Visitations (per seed mix sub-plot)") +
   stat_smooth()
 
 ggplot(canopyvisits, aes(x=Canopy, y=Number)) +
   geom_point(aes(colour=as.factor(Orchard.Age))) +
-  labs(x="Canopy Cover", y = "Insect Visitations") +
+  labs(x="Canopy Cover", y = "Insect Visitations (per seed mix sub-plot)") +
   stat_smooth(method="lm")
 
 #############################
