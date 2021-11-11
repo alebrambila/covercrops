@@ -25,9 +25,8 @@ names(observedpollinators) <- c ("Month", "Orchard.Age", "Block", "Management", 
 ## morphospecies were visiting that seed mix
 
 
-
 seedmixabundances <- observedpollinators %>%
-  select(Orchard.Age, Block, Management, Seed.Mix, Morphospecies, Number) %>%
+  dplyr::select(Orchard.Age, Block, Management, Seed.Mix, Morphospecies, Number) %>%
   group_by(Orchard.Age, Block, Seed.Mix, Management, Morphospecies) %>%
   summarise(Number = sum(Number))
 
@@ -43,12 +42,12 @@ ggplot(seedmixabundances, aes(fill=Morphospecies, x=Seed.Mix)) +
 ## so that I can account for escapee plants.
 
 annualspecies <- c("collomia", "amsinckia", "clarkia", "epilobium", "gilia",
-                   "lotus", "plectritis", "sanguisorba")
+                   "lotus", "plectritis", "sanguisorba", "annual")
 
 perennialspecies <- c("achillea", "agoseris", "lomatium", "potentilla",
-                      "prunella", "viola", "geum", "eriophyllum")
+                      "prunella", "viola", "geum", "eriophyllum", "perennial")
 
-industryspecies <- c("barley", "oats", "vetch", "clover")
+industryspecies <- c("barley", "oats", "vetch", "clover", "industry")
 
 taxonomicobservations<-observedpollinators%>%
   mutate(seedmix2=ifelse(Host.Plant%in%perennialspecies, "perennial",
@@ -59,26 +58,35 @@ taxonomicobservations<-observedpollinators%>%
   group_by(Orchard.Age, Block, Management, Morphospecies, seedmix2)%>%
   summarise(Number = sum(Number))
 
-#add in a full plot list to account for zeroes
-plots <- read.csv("canopy_cover.csv")%>%
-  filter(year==2021)%>% #have to do this here
-  mutate(seedmix=ifelse(seedmix=="annuals", "annual", ifelse(seedmix=="perennials", "perennial", seedmix)))%>%
-  dplyr::select(1:4)
-names(plots) <- c("Orchard.Age", "Block", "Management", "Seed.Mix")
-
-newplots<-plots%>%  #convert to species types
-  mutate(seedmix2=ifelse(Seed.Mix=="control", "weed", Seed.Mix))%>%
-  dplyr::select(-Seed.Mix)
-
-taxonomicobservations<-full_join(newplots, taxonomicobservations)%>% #need zeroes
- mutate(Number=ifelse(is.na(Number), 0, Number))
-
 ggplot(taxonomicobservations, aes(fill=Morphospecies, x=seedmix2)) + 
   geom_bar(stat="count", position="stack") +
   theme(axis.text.x = element_text(angle=65, vjust=0.6)) +
   labs(x="Seed Mix", y="Pollinator Visitation")
+#add in a full plot list to account for zeroes
+plots <- read.csv("canopy_cover.csv")%>%
+  filter(year==2021)%>% #have to do this here
+  mutate(seedmix=ifelse(seedmix=="annuals", "annual", ifelse(seedmix=="perennials", "perennial", seedmix)))%>%
+  mutate(management=ifelse(management=="scraped", "flailscrape", ifelse(management=="flailed", "flail", "unmanaged")))%>%
+   dplyr::select(1:4)
+names(plots) <- c("Orchard.Age", "Block", "Management", "Seed.Mix")
 
-ggplot(subset(taxonomicobservations, seedmix2!="megamix"), aes(x=seedmix2, y=Number)) +
+newplots<-plots%>%  #convert to species types
+  mutate(seedmix2=ifelse(Seed.Mix=="control", "weed", Seed.Mix))%>%
+  dplyr::select(-Seed.Mix)%>%
+  filter(seedmix2!="megamix")
+
+
+
+taxonomicobservations1<-taxonomicobservations%>%
+  group_by(Orchard.Age, Block, Management, seedmix2)%>%
+  summarize(Number=sum(Number))
+
+taxonomicobservations1<-full_join(newplots, taxonomicobservations1)%>% #need zeroes
+  mutate(Number=ifelse(is.na(Number), 0, Number))
+
+
+
+ggplot(subset(taxonomicobservations1, seedmix2!="megamix"), aes(x=seedmix2, y=Number)) +
   geom_boxplot(aes(fill=as.factor(Orchard.Age))) +
   labs(x="Host Plant Groups", y="Pollinator Visitation (per management plot)")
 
@@ -89,11 +97,7 @@ ggplot(subset(taxonomicobservations, seedmix2!="megamix"), aes(x=seedmix2, y=Num
 ##First, I want to test if the means are different for total pollinator visitations in each seed mix
 ## category. I'll create a dataset first of all the visitations (not divided up my morphospecies)
 ## per seed mix, and then compare the means with the 'aov' function
-seedmixmeans <- observedpollinators %>%
-  group_by(Orchard.Age, Block, Seed.Mix) %>%
-  summarise(Number = sum(Number))
-
-aov <- aov(Number~Seed.Mix, data=seedmixmeans)
+aov <- aov(Number~seedmix2, data=taxonomicobservations1)
 summary(aov)
 
 ## Results: P < 0.05, so I'll go ahead with a Tukey test
@@ -106,20 +110,21 @@ tukey <- TukeyHSD(aov, conf.level=.95)
 #############################
 ## Statistics for 'taxonomicobservations'
 
-seedmixmeans2<-observedpollinators%>%
-  mutate(seedmix2=ifelse(Host.Plant%in%perennialspecies, "perennial",
-                         ifelse(Host.Plant%in%annualspecies, "annual", 
-                                ifelse(Host.Plant%in%industryspecies, "industry", 
-                                       ifelse(Host.Plant=="weed","weed", Host.Plant)))))%>%
-  ungroup()%>%
-  group_by(Orchard.Age, Block, seedmix2)%>%
-  summarise(Number = sum(Number))
+#seedmixmeans2<-observedpollinators%>%
+#  mutate(seedmix2=ifelse(Host.Plant%in%perennialspecies, "perennial",
+##                         ifelse(Host.Plant%in%annualspecies, "annual", 
+#                                ifelse(Host.Plant%in%industryspecies, "industry", 
+ #                                      ifelse(Host.Plant=="weed","weed", Host.Plant)))))%>%
+#  ungroup()%>%
+#  group_by(Orchard.Age, Block, Management, seedmix2)%>%
+#  summarise(Number = sum(Number))
 
-aov <- aov(Number~seedmix2, data=seedmixmeans2)
-summary(aov)
+
+#aov <- aov(Number~seedmix2, data=seedmixmeans2)
+#summary(aov)
 
 ## Results: P < 0.05, so I'll go ahead with a Tukey test
-tukey2 <- TukeyHSD(aov, conf.level=.95)
+#tukey2 <- TukeyHSD(aov, conf.level=.95)
 
 ## When examining observations by plant species, there is a significant difference between
 ## perennials and annuals, and perennials and weeds
@@ -129,8 +134,26 @@ tukey2 <- TukeyHSD(aov, conf.level=.95)
 ## Statistics for 'taxonomicobservations'
 ## Including orchard age
 
-aovorchard <- aov(Number~seedmix2*as.factor(Orchard.Age), data=seedmixmeans2)
+aovorchard <- aov(Number~seedmix2*as.factor(Orchard.Age), data=taxonomicobservations1)
 tukey3 <- TukeyHSD(aovorchard, conf.level=.95)
+smm3<-taxonomicobservations1%>%
+ mutate(trt= as.factor(paste(seedmix2, Orchard.Age, sep="_")))%>%
+  ungroup()
+
+aov3<-aov(Number~trt, data=smm3)
+
+#COMPACT LETTER DISPLAY
+cld(glht(aov3, mcp(trt="Tukey"))) 
+
+#library(nlme)
+#library(multcomp)
+#mm<-lme(Number~paste(seedmix2, as.factor(Orchard.Age)), data=seedmixmeans2)
+#tuk3<-glht(aovorchard, linft=mcp(func="Tukey"))
+#cld(tuk3)
+
+#MM<-lme(lrr~func, random = ~1|site, data = subset(inter, metric=="Shannon"&!is.na(difference)))
+#summary(glht(MM, linfct=mcp(func="Tukey")))
+#cld(glht(MM, linfct=mcp(func="Tukey")))
 
 #############################
 #############################
@@ -147,13 +170,38 @@ perennialmeans <- observedpollinators%>%
                                 ifelse(Host.Plant%in%industryspecies, "industry", 
                                        ifelse(Host.Plant=="weed","weed", Host.Plant)))))%>%
   ungroup()%>%
-  group_by(Orchard.Age, Block, seedmix2, Host.Plant)%>%
+  group_by(Orchard.Age, Block, Management, seedmix2, Host.Plant)%>%
   summarise(Number = sum(Number)) %>%
+  mutate(Host.Plant=as.factor(Host.Plant))#%>%
   filter(seedmix2 == "perennial")
 
+  
+ggplot(subset(perennialmeans, seedmix2!="megamix"), aes(x=Host.Plant, y=Number)) +
+    geom_boxplot(aes(fill=seedmix2)) + geom_jitter()+ facet_grid(~Orchard.Age, scales="fixed")
+    labs(x="Host Plant Groups", y="Pollinator Visitation (per management plot)")
+  
+  
 ## Stat tests
+    
+#across all
 aovperennials <- aov(Number~Host.Plant, data=perennialmeans)
 tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
+cld(glht(aovperennials, mcp(Host.Plant="Tukey"))) 
+
+#across all
+aovperennials.15 <- aov(Number~Host.Plant, data=subset(perennialmeans, Orchard.Age==15))
+tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
+cld(glht(aovperennials.15, mcp(Host.Plant="Tukey"))) 
+
+#across all
+aovperennials.40 <- aov(Number~Host.Plant, data=subset(perennialmeans, Orchard.Age==40))
+tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
+cld(glht(aovperennials.40, mcp(Host.Plant="Tukey"))) 
+
+#across all
+aovperennial.60 <- aov(Number~Host.Plant, data=subset(perennialmeans, Orchard.Age==60))
+tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
+cld(glht(aovperennial.60, mcp(Host.Plant="Tukey"))) 
 
 ## Nothing stands out as significant, so I'll do another test within orchard ages
 aovperennialorchard <- aov(Number~Host.Plant*as.factor(Orchard.Age), data=perennialmeans)
