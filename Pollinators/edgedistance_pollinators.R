@@ -49,7 +49,7 @@ cleanblockdensity <- as.data.frame(blockdensity)%>%
 ggplot(cleanblockdensity, aes(x=Distance, y=Number)) +
   geom_point(aes(colour=as.factor(Orchard.Age))) +
   labs(x="Distance From Edge (m)", y = "Insect Visitations (per management plot)") +
-  stat_smooth()
+  stat_smooth(method="lm", size=2, color="black", se=F)
 
 #############################
 #############################
@@ -65,3 +65,18 @@ anova(mmedgedistance)#significant when you ignore orchard age
 mmedgedistance<-lme(Number~Distance, random = list( ~1|Management, ~1|Orchard.Age), data = cleanblockdensity, na.action=na.omit)
 summary(mmedgedistance)
 anova(mmedgedistance) #not when you include it
+
+
+mmedgedistance<-lme(Number~Distance*Orchard.Age, random = list( ~1|Management), data = cleanblockdensity, na.action=na.omit)
+summary(mmedgedistance)
+anova(mmedgedistance) #yes within
+
+#40
+mmedgedistance<-lme(Number~Distance, random = list( ~1|Management), data = subset(cleanblockdensity, Orchard.Age==40), na.action=na.omit)
+summary(mmedgedistance)
+anova(mmedgedistance) #NOT 40
+
+#60
+mmedgedistance<-lme(Number~Distance, random = list( ~1|Management), data = subset(cleanblockdensity, Orchard.Age==60), na.action=na.omit)
+summary(mmedgedistance)
+anova(mmedgedistance) #NOT 60
