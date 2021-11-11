@@ -101,7 +101,8 @@ ggplot(subset(taxonomicrichness, seedmix2!="megamix"), aes(x=seedmix2, y=richnes
 
 seedmixrichnessmeans<-taxonomicrichness%>%
 ungroup()%>%
-    group_by(Orchard.Age, Block, seedmix2)
+    group_by(Orchard.Age, Block, seedmix2)%>%
+  filter(seedmix2!="megamix")
   
 aov <- aov(richness~seedmix2, data=seedmixrichnessmeans)
 summary(aov)
@@ -121,6 +122,16 @@ tukey <- TukeyHSD(aov, conf.level=.95)
 aovrichnessorchards <- aov(richness~seedmix2*as.factor(Orchard.Age), data=seedmixrichnessmeans)
 tukey2 <- TukeyHSD(aovrichnessorchards, conf.level=.95)
 
+
+test<-seedmixrichnessmeans%>%
+  mutate(trt= as.factor(paste(seedmix2, Orchard.Age, sep="_")))%>%
+  ungroup()
+
+#COMPACT LETTER DISPLAY
+cld(glht(aov(richness~trt, data=test), mcp(trt="Tukey"))) 
+
+
+
 #############################
 #############################
 ## Statistics
@@ -136,11 +147,40 @@ perennialrichness<-collectedpollinators%>%
   ungroup()%>%
   group_by(Orchard.Age, Block, Host.Plant, seedmix2)%>%
   summarize(richness=length(unique(Genus)))%>%
+  mutate(Host.Plant=as.factor(Host.Plant))#%>%
   filter(seedmix2 == "perennial")
 
+
+ggplot(subset(perennialrichness, seedmix2!="megamix"), aes(x=Host.Plant, y=richness)) +
+  geom_boxplot(aes(fill=seedmix2)) + geom_jitter()+ facet_grid(~Orchard.Age, scales="fixed")
+labs(x="Host Plant Groups", y="Pollinator Visitation (per management plot)")
+
+
 ## Stat tests
-aovperennialrichness <- aov(richness~Host.Plant, data=perennialrichness)
-tukey3 <- TukeyHSD(aovperennialrichness, conf.level=.95)
+#across all
+aovperennials <- aov(richness~Host.Plant, data=perennialrichness)
+tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
+cld(glht(aovperennials, mcp(Host.Plant="Tukey"))) 
+
+#across all
+aovperennials.15 <- aov(richness~Host.Plant, data=subset(perennialrichness, Orchard.Age==15))
+tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
+cld(glht(aovperennials.15, mcp(Host.Plant="Tukey"))) 
+
+#across all
+aovperennials.40 <- aov(richness~Host.Plant, data=subset(perennialrichness, Orchard.Age==40))
+tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
+cld(glht(aovperennials.40, mcp(Host.Plant="Tukey"))) 
+
+#across all
+aovperennial.60 <- aov(richness~Host.Plant, data=subset(perennialrichness, Orchard.Age==60))
+tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
+cld(glht(aovperennial.60, mcp(Host.Plant="Tukey"))) 
+
+## Stat tests
+#aovperennialrichness <- aov(richness~Host.Plant, data=perennialrichness)
+#tukey3 <- TukeyHSD(aovperennialrichness, conf.level=.95)
+#cld(glht(aovperennialrichness, mcp(Host.Plant="Tukey"))) 
 
 ## No significance between species across all orchard ages, so I'll look at it within 
 ## each orchard age:
