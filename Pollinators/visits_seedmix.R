@@ -172,36 +172,51 @@ perennialmeans <- observedpollinators%>%
   ungroup()%>%
   group_by(Orchard.Age, Block, Management, seedmix2, Host.Plant)%>%
   summarise(Number = sum(Number)) %>%
-  mutate(Host.Plant=as.factor(Host.Plant))#%>%
-  filter(seedmix2 == "perennial")
+  mutate(Host.Plant=as.factor(Host.Plant))%>%
+  ungroup()%>%
+  spread(Host.Plant, Number, fill=0)
+pereninalmeans1<-full_join(newplots, perennialmeans)%>%
+  filter(seedmix2!="megamix"&!is.na(seedmix2))%>%
+  dplyr::select(-20)%>%
+  gather(Host.Plant, Number, 5:19)%>%
+  mutate(Number=ifelse(is.na(Number), 0, Number))%>%
+  filter(Host.Plant!="barley")%>%
+  mutate(Host.Plant=as.factor(Host.Plant))
+test<-group_by(pereninalmeans1, Orchard.Age, Host.Plant)%>%
+  summarize(test=sum(Number))%>%
+  filter(Host.Plant!="barley")
 
-  
-ggplot(subset(perennialmeans, seedmix2!="megamix"), aes(x=Host.Plant, y=Number)) +
-    geom_boxplot(aes(fill=seedmix2)) + geom_jitter()+ facet_grid(~Orchard.Age, scales="fixed")
-    labs(x="Host Plant Groups", y="Pollinator Visitation (per management plot)")
+perennialmeans2<-left_join(pereninalmeans1, test)%>%
+  filter(test!=0)
+
+#plants with all zeroes not shown
+ggplot(perennialmeans2, aes(x=Host.Plant, y=Number)) +
+    geom_jitter(size=.5)+geom_boxplot(aes(fill=seedmix2), position="identity") +  facet_grid(~Orchard.Age, scales="fixed")+
+    labs(x="Host Plant Groups", y="Pollinator Visitation (per management plot)")+
+       theme(axis.text.x=element_text(angle = -90, hjust = 0))
   
   
 ## Stat tests
     
 #across all
-aovperennials <- aov(Number~Host.Plant, data=perennialmeans)
+aovperennials <- aov(Number~Host.Plant, data=pereninalmeans1)
 tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
-cld(glht(aovperennials, mcp(Host.Plant="Tukey"))) 
+cld(glht(aovperennials, mcp(Host.Plant="Tukey"))) #only achillea significantly higher
 
 #across all
-aovperennials.15 <- aov(Number~Host.Plant, data=subset(perennialmeans, Orchard.Age==15))
+aovperennials.15 <- aov(Number~Host.Plant, data=subset(pereninalmeans1, Orchard.Age==15))
 tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
-cld(glht(aovperennials.15, mcp(Host.Plant="Tukey"))) 
+cld(glht(aovperennials.15, mcp(Host.Plant="Tukey"))) #only achillea
 
 #across all
-aovperennials.40 <- aov(Number~Host.Plant, data=subset(perennialmeans, Orchard.Age==40))
+aovperennials.40 <- aov(Number~Host.Plant, data=subset(pereninalmeans1, Orchard.Age==40))
 tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
-cld(glht(aovperennials.40, mcp(Host.Plant="Tukey"))) 
+cld(glht(aovperennials.40, mcp(Host.Plant="Tukey"))) #only geum significanlty higher
 
 #across all
-aovperennial.60 <- aov(Number~Host.Plant, data=subset(perennialmeans, Orchard.Age==60))
+aovperennial.60 <- aov(Number~Host.Plant, data=subset(pereninalmeans1, Orchard.Age==60))
 tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
-cld(glht(aovperennial.60, mcp(Host.Plant="Tukey"))) 
+cld(glht(aovperennial.60, mcp(Host.Plant="Tukey"))) #only geum sig higher
 
 ## Nothing stands out as significant, so I'll do another test within orchard ages
 aovperennialorchard <- aov(Number~Host.Plant*as.factor(Orchard.Age), data=perennialmeans)

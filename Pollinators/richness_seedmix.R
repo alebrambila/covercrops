@@ -147,35 +147,45 @@ perennialrichness<-collectedpollinators%>%
   ungroup()%>%
   group_by(Orchard.Age, Block, Host.Plant, seedmix2)%>%
   summarize(richness=length(unique(Genus)))%>%
-  mutate(Host.Plant=as.factor(Host.Plant))#%>%
-  filter(seedmix2 == "perennial")
+  mutate(Host.Plant=as.factor(Host.Plant))%>%
+    filter(Host.Plant!="barley")
+  
+  perennialrichness1<-full_join(pereninalmeans1, perennialrichness)%>%
+    mutate(richness=ifelse(is.na(richness), 0, richness))
+  
+  test<-group_by(perennialrichness1, Orchard.Age, Host.Plant)%>%
+    summarize(test2=sum(richness))%>%
+    filter(Host.Plant!="barley")
+  
+  perennialrichness2<-left_join(perennialrichness1, test)%>%
+    filter(test2!=0)
 
-
-ggplot(subset(perennialrichness, seedmix2!="megamix"), aes(x=Host.Plant, y=richness)) +
-  geom_boxplot(aes(fill=seedmix2)) + geom_jitter()+ facet_grid(~Orchard.Age, scales="fixed")
-labs(x="Host Plant Groups", y="Pollinator Visitation (per management plot)")
-
+#copy from visit seedmix
+ggplot(perennialrichness2, aes(x=Host.Plant, y=richness)) +
+  geom_jitter(size=.5)+geom_boxplot(aes(fill=seedmix2), position="identity") +  facet_grid(~Orchard.Age, scales="fixed")+
+  labs(x="Host Plant Groups", y="Pollinator richness (per management plot)")+
+  theme(axis.text.x=element_text(angle = -90, hjust = 0))
 
 ## Stat tests
 #across all
-aovperennials <- aov(richness~Host.Plant, data=perennialrichness)
+aovperennials <- aov(richness~Host.Plant, data=perennialrichness2)
 tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
-cld(glht(aovperennials, mcp(Host.Plant="Tukey"))) 
+cld(glht(aovperennials, mcp(Host.Plant="Tukey"))) # lots to process! achillea is up there, weed too
 
 #across all
-aovperennials.15 <- aov(richness~Host.Plant, data=subset(perennialrichness, Orchard.Age==15))
+aovperennials.15 <- aov(richness~Host.Plant, data=subset(perennialrichness2, Orchard.Age==15))
 tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
-cld(glht(aovperennials.15, mcp(Host.Plant="Tukey"))) 
+cld(glht(aovperennials.15, mcp(Host.Plant="Tukey"))) #similar
 
 #across all
-aovperennials.40 <- aov(richness~Host.Plant, data=subset(perennialrichness, Orchard.Age==40))
+aovperennials.40 <- aov(richness~Host.Plant, data=subset(perennialrichness2, Orchard.Age==40))
 tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
-cld(glht(aovperennials.40, mcp(Host.Plant="Tukey"))) 
+cld(glht(aovperennials.40, mcp(Host.Plant="Tukey"))) #geum up
 
 #across all
-aovperennial.60 <- aov(richness~Host.Plant, data=subset(perennialrichness, Orchard.Age==60))
+aovperennial.60 <- aov(richness~Host.Plant, data=subset(perennialrichness2, Orchard.Age==60))
 tukey4 <- TukeyHSD(aovperennials, conf.level=.95)
-cld(glht(aovperennial.60, mcp(Host.Plant="Tukey"))) 
+cld(glht(aovperennial.60, mcp(Host.Plant="Tukey"))) #geum and achillea
 
 ## Stat tests
 #aovperennialrichness <- aov(richness~Host.Plant, data=perennialrichness)
