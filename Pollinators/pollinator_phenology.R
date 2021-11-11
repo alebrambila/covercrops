@@ -32,15 +32,15 @@ theme_set(theme_classic())
 gs4_deauth()
 
 phenology <- read_sheet("https://docs.google.com/spreadsheets/d/1RrV3xTE2EgWgrY5LCbAAWNRDw7NDvgUvRTSsW6cJHjs/edit?usp=sharing")
-april<-select(phenology, 1:4, 5:10)%>%
+april<-dplyr::select(phenology, 1:4, 5:10)%>%
   mutate(lastflower=as.numeric(NA), fruit=as.numeric(NA), senesence=as.numeric(NA),  flailed=as.numeric(NA),  scraped=as.numeric(NA),  regrowth=as.numeric(NA),  postflowerveg=as.numeric(NA))
-may<-  select(phenology, 1:4, 11:16)%>%
+may<-  dplyr::select(phenology, 1:4, 11:16)%>%
   mutate(lastflower=as.numeric(NA), fruit=as.numeric(NA), senesence=as.numeric(NA),  flailed=as.numeric(NA),  scraped=as.numeric(NA),  regrowth=as.numeric(NA),  postflowerveg=as.numeric(NA))
-june<- select(phenology, 1:4, 17:24)%>%
+june<- dplyr::select(phenology, 1:4, 17:24)%>%
   mutate(germination=as.numeric(NA), flailed=as.numeric(NA),  scraped=as.numeric(NA),  regrowth=as.numeric(NA),  postflowerveg=as.numeric(NA))
-july<- select(phenology, 1:4, 25:32)%>%
+july<- dplyr::select(phenology, 1:4, 25:32)%>%
   mutate(seedling=as.numeric(NA), germination=as.numeric(NA),  scraped=as.numeric(NA),  regrowth=as.numeric(NA),  postflowerveg=as.numeric(NA))
-august<- select(phenology, 1:4, 33:44)%>%
+august<- dplyr::select(phenology, 1:4, 33:44)%>%
   mutate(germination=as.numeric(NA))
 april[is.na(april)] <- 0
 may[is.na(may)] <- 0
@@ -91,9 +91,9 @@ ip3<-read_sheet("https://docs.google.com/spreadsheets/d/10q37avMnA0x4wG69Joh1eMK
   summarize(richness=length(unique(Genus)), abundance=n())
 pk2<-plotkey%>%group_by(orchard_age, block, management)%>%summarize()
 ip3<-left_join(pk2, ip3)
-ip4<-select(ip3, -abundance)%>%spread(numericmonth, richness, fill=0)%>%
+ip4<-dplyr::select(ip3, -abundance)%>%spread(numericmonth, richness, fill=0)%>%
   gather(numericmonth, richness, `1`, `2`, `3`, `4`, `5`)%>%
-  select(-4)
+  dplyr::select(-4)
 cp<-left_join(mutate(ip4, numericmonth=as.numeric(numericmonth)), ip3)%>%
   mutate(abundance=ifelse(is.na(abundance), 0, abundance))
 
@@ -101,7 +101,7 @@ phenflor<-left_join(mutate(phenology_long0, orchardage=as.factor(orchardage)), f
   mutate(anyflower=ifelse(firstflower==1|flowering==1|lastflower==1, 1, 0))%>%
   filter(anyflower==1)%>%
   mutate(infloresences=ifelse(flowering==1, infloresences, infloresences*.1))%>%
-  select(1:5, 18)%>%
+  dplyr::select(1:5, 18)%>%
   mutate(infloresences=ifelse(is.na(infloresences),1,infloresences))
 
 #number of flowers available in each plot
@@ -110,13 +110,14 @@ phenflorsum<-phenflor%>%
   summarize(flor=sum(infloresences))%>%
   mutate(orchard_age=orchardage)%>%
   ungroup()%>%
-  select(-orchardage)
+  dplyr::select(-orchardage)
 
 #add in zeroes and summarize for SE
 phenflorsum1<-left_join(mutate(pk2, orchard_age=as.factor(orchard_age)), phenflorsum)%>%
   spread(date, flor, fill=0)%>%
   gather(numericmonth, flor, `4`, `5`, `6`, `7`, `8`)%>%
-  select(-4)
+  dplyr::select(-4)%>%
+  mutate(numericmonth=as.factor(numericmonth))
 
 pfsumsum<-phenflorsum1%>%
   group_by(orchard_age, numericmonth)%>%
@@ -151,9 +152,9 @@ op<-read_sheet("https://docs.google.com/spreadsheets/d/1IeWQPtXPJ-MrIua0wZswSJNR
   summarize(richness=length(unique(Morphospecies)), abundance=sum(Count))
 op1<-full_join(pk2, op)
 
-op2<-select(op1, -abundance)%>%spread(numericmonth, richness, fill=0)%>%
+op2<-dplyr::select(op1, -abundance)%>%spread(numericmonth, richness, fill=0)%>%
   gather(numericmonth, richness, `1`, `2`, `3`, `4`, `5`)%>%
-  select(-4)
+  dplyr::select(-4)
 op3<-left_join(mutate(op2, numericmonth=as.numeric(numericmonth)), op1)%>%
   mutate(abundance=ifelse(is.na(abundance), 0, abundance))
 
@@ -202,6 +203,10 @@ lsmeans(mmfloralphenology.60,
         pairwise ~ numericmonth,
         adjust="tukey") #as expected here month 6 and 5 are not sig different, 
 
+#COMPACT LETTER DISPLAY
+cld(glht(mmfloralphenology.15, mcp(numericmonth="Tukey"))) 
+cld(glht(mmfloralphenology.40, mcp(numericmonth="Tukey"))) 
+cld(glht(mmfloralphenology.60, mcp(numericmonth="Tukey"))) 
 
 ## Pollinator abundance mixed model
 
