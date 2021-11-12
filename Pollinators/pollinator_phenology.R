@@ -156,6 +156,7 @@ op2<-dplyr::select(op1, -abundance)%>%spread(numericmonth, richness, fill=0)%>%
   gather(numericmonth, richness, `1`, `2`, `3`, `4`, `5`)%>%
   dplyr::select(-4)
 op3<-left_join(mutate(op2, numericmonth=as.numeric(numericmonth)), op1)%>%
+  mutate(numericmonth=as.factor(numericmonth))%>%
   mutate(abundance=ifelse(is.na(abundance), 0, abundance))
 
 opsum<-op3%>%
@@ -215,21 +216,25 @@ summary(mmpollinatorphenology)
 anova(mmpollinatorphenology)# now its significant, for some reason it had to be a factor here (which it is). I think what was happening was that it was trying for a linear relationship with the numbers which didnt fit since it's a hump. 
 
 #break apart by orchard
-mmpollinatorphenology.15<-lme(abundance~as.factor(numericmonth), random =  ~1|management, data=subset(op3, orchard_age==15)) 
+mmpollinatorphenology.15<-lme(abundance~numericmonth, random =  ~1|management, data=subset(op3, orchard_age==15)) 
 summary(mmpollinatorphenology.15)
 lsmeans(mmpollinatorphenology.15,
         pairwise ~ numericmonth,
         adjust="tukey") #showing significant pairings now
 
-mmpollinatorphenology.40<-lme(abundance~as.factor(numericmonth), random =  ~1|management, data=subset(op3, orchard_age==40)) 
+mmpollinatorphenology.40<-lme(abundance~numericmonth, random =  ~1|management, data=subset(op3, orchard_age==40)) 
 summary(mmpollinatorphenology.40)
 lsmeans(mmpollinatorphenology.40,
         pairwise ~ numericmonth,
         adjust="tukey") 
 
-mmpollinatorphenology.60<-lme(abundance~as.factor(numericmonth), random =  ~1|management, data=subset(op3, orchard_age==60)) 
+mmpollinatorphenology.60<-lme(abundance~numericmonth, random =  ~1|management, data=subset(op3, orchard_age==60)) 
 summary(mmpollinatorphenology.60)
 lsmeans(mmpollinatorphenology.60,
         pairwise ~ numericmonth,
         adjust="tukey") 
 
+#COMPACT LETTER DISPLAY - POLLINATORS
+cld(glht(mmpollinatorphenology.15, mcp(numericmonth="Tukey"))) 
+cld(glht(mmpollinatorphenology.40, mcp(numericmonth="Tukey"))) 
+cld(glht(mmpollinatorphenology.60, mcp(numericmonth="Tukey"))) 
