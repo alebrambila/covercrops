@@ -139,6 +139,26 @@ cld(glht(aov(richness~trt, data=test), mcp(trt="Tukey")))
 ## so I'm going to test if there are any significant differences between species
 ## within the perennial seed mix.
 
+perennialmeans <- observedpollinators%>%
+  mutate(seedmix2=ifelse(Host.Plant%in%perennialspecies, "perennial",
+                         ifelse(Host.Plant%in%annualspecies, "annual", 
+                                ifelse(Host.Plant%in%industryspecies, "industry", 
+                                       ifelse(Host.Plant=="weed","weed", Host.Plant)))))%>%
+  ungroup()%>%
+  group_by(Orchard.Age, Block, Management, seedmix2, Host.Plant)%>%
+  summarise(Number = sum(Number)) %>%
+  mutate(Host.Plant=as.factor(Host.Plant))%>%
+  ungroup()%>%
+  spread(Host.Plant, Number, fill=0)
+
+perennialmeans1<-full_join(newplots, perennialmeans)%>%
+  filter(seedmix2!="megamix"&!is.na(seedmix2))%>%
+  dplyr::select(-20)%>%
+  gather(Host.Plant, Number, 5:19)%>%
+  mutate(Number=ifelse(is.na(Number), 0, Number))%>%
+  filter(Host.Plant!="barley")%>%
+  mutate(Host.Plant=as.factor(Host.Plant))
+
 perennialrichness<-collectedpollinators%>%
   mutate(seedmix2=ifelse(Host.Plant%in%perennialspecies, "perennial",
                          ifelse(Host.Plant%in%annualspecies, "annual", 
@@ -150,7 +170,7 @@ perennialrichness<-collectedpollinators%>%
   mutate(Host.Plant=as.factor(Host.Plant))%>%
     filter(Host.Plant!="barley")
   
-  perennialrichness1<-full_join(pereninalmeans1, perennialrichness)%>%
+  perennialrichness1<-full_join(perennialmeans1, perennialrichness)%>%
     mutate(richness=ifelse(is.na(richness), 0, richness))
   
   test<-group_by(perennialrichness1, Orchard.Age, Host.Plant)%>%
@@ -163,7 +183,7 @@ perennialrichness<-collectedpollinators%>%
 #copy from visit seedmix
 ggplot(perennialrichness2, aes(x=Host.Plant, y=richness)) +
   geom_jitter(size=.5)+geom_boxplot(aes(fill=seedmix2), position="identity") +  facet_grid(~Orchard.Age, scales="fixed")+
-  labs(x="Host Plant Groups", y="Pollinator richness (per management plot)")+
+  labs(x="Host Plant Species", y="Pollinator richness (per management plot)")+
   theme(axis.text.x=element_text(angle = -90, hjust = 0))
 
 ## Stat tests
