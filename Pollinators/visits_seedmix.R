@@ -7,6 +7,9 @@ library(tidyverse)
 library(ggplot2)
 library(dplyr)
 
+library(nlme)
+library(multcomp)
+
 #############################
 #############################
 #############################
@@ -145,8 +148,6 @@ aov3<-aov(Number~trt, data=smm3)
 #COMPACT LETTER DISPLAY
 cld(glht(aov3, mcp(trt="Tukey"))) 
 
-#library(nlme)
-#library(multcomp)
 #mm<-lme(Number~paste(seedmix2, as.factor(Orchard.Age)), data=seedmixmeans2)
 #tuk3<-glht(aovorchard, linft=mcp(func="Tukey"))
 #cld(tuk3)
@@ -192,7 +193,7 @@ perennialmeans2<-left_join(pereninalmeans1, test)%>%
 #plants with all zeroes not shown
 ggplot(perennialmeans2, aes(x=Host.Plant, y=Number)) +
     geom_jitter(size=.5)+geom_boxplot(aes(fill=seedmix2), position="identity") +  facet_grid(~Orchard.Age, scales="fixed")+
-    labs(x="Host Plant Groups", y="Pollinator Visitation (per management plot)")+
+    labs(x="Host Plant Species", y="Pollinator Visitation (per management plot)")+
        theme(axis.text.x=element_text(angle = -90, hjust = 0))
   
   
