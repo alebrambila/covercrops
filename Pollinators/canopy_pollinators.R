@@ -53,10 +53,21 @@ ggplot(canopyvisits, aes(x=Canopy, y=Number, colour=as.factor(Orchard.Age))) +
 ggplot(canopyvisits, aes(x=Canopy, y=Number)) +
   geom_point(aes(colour=as.factor(Orchard.Age))) +
   labs(x="Canopy Cover", y = "Insect Visitations (per seed mix sub-plot)") +
-  stat_smooth(method="lm",aes(color=as.factor(Orchard.Age)), size=1, se=F)+
-  stat_smooth(method="lm", size=2, color="black", se=F)
+  ##stat_smooth(method="lm",aes(color=as.factor(Orchard.Age)), size=1, se=F)+
+  stat_smooth(method="lm", size=2, color="black", se=F) +
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=20))
 
+## Plot of canopy vs. orchard age differences, and CLD
+ggplot(canopyvisits, aes(x=Orchard.Age, y=Canopy)) +
+  geom_boxplot(aes(fill=as.factor(Orchard.Age)))
 
+canopycld<-canopyvisits%>%
+  mutate(trt= as.factor(paste(Canopy, Orchard.Age, sep="_")))%>%
+  ungroup()
+
+#COMPACT LETTER DISPLAY
+cld(glht(aov(Canopy~trt, data=canopycld), mcp(trt="Tukey"))) 
 #############################
 #############################
 

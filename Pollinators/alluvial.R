@@ -45,13 +45,15 @@ perennialalluvial <- collectedpollinators %>%
   summarise()
 
 ggplot(data = perennialalluvial,
-       aes(axis1 = Genus, axis2 = Host.Plant,
+       aes(axis1 = Host.Plant, axis2 = Genus,
            y = Count)) +
-  scale_x_discrete(limits = c("Pollinator Taxa", "Host Plant"), expand = c(.05, .05)) +
-  geom_alluvium(aes(fill = Genus)) +
+  scale_x_discrete(limits = c("Host Plant", "Pollinator Taxa"), expand = c(.05, .05)) +
+  geom_alluvium(aes(fill = Host.Plant)) +
   geom_stratum() +
   geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=20))
 
 ## Alluvial chart for plants in the industry seed mix and their associated pollinators
 industryalluvial <- collectedpollinators %>%

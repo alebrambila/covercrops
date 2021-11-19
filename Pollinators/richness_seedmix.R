@@ -90,7 +90,9 @@ ggplot(subset(seedmix.rich, Seed.Mix!="megamix"), aes(x=Seed.Mix, y=richness))+g
 #version 2: based on species type
 ggplot(subset(taxonomicrichness, seedmix2!="megamix"), aes(x=seedmix2, y=richness))+
   geom_boxplot(aes(fill=as.factor(Orchard.Age))) +
-  labs(x="Host Plant Groups", y="Taxonomic Richness (per management plot)")
+  labs(x="Host Plant Groups", y="Taxonomic Richness (per management plot)") +
+  theme(axis.text=element_text(size=16),
+        axis.title=element_text(size=20))
 
 
 #############################
