@@ -91,7 +91,9 @@ taxonomicobservations1<-full_join(newplots, taxonomicobservations1)%>% #need zer
 
 ggplot(subset(taxonomicobservations1, seedmix2!="megamix"), aes(x=seedmix2, y=Number)) +
   geom_boxplot(aes(fill=as.factor(Orchard.Age))) +
-  labs(x="Host Plant Groups", y="Pollinator Visitation (per management plot)")
+  labs(x="Host Plant Groups", y="Pollinator Visitations (per management plot)") +
+  theme(axis.text=element_text(size=22),
+        axis.title=element_text(size=28))
 
 #############################
 #############################

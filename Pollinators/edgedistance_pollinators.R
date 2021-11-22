@@ -48,10 +48,10 @@ cleanblockdensity <- as.data.frame(blockdensity)%>%
 
 ggplot(cleanblockdensity, aes(x=Distance, y=Number)) +
   geom_point(aes(colour=as.factor(Orchard.Age))) +
-  labs(x="Distance From Edge (m)", y = "Insect Visitations (per management plot)") +
+  labs(x="Distance From Edge (m)", y = "Pollinator Visitations (per management plot)") +
   stat_smooth(method="lm", size=2, color="black", se=F) +
-  theme(axis.text=element_text(size=16),
-      axis.title=element_text(size=20))
+  theme(axis.text=element_text(size=22),
+      axis.title=element_text(size=28))
 
 
 #############################
