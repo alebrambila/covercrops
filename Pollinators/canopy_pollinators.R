@@ -8,6 +8,8 @@ library(ggplot2)
 library(dplyr)
 library(nlme)
 library(multcomp)
+library(tidyr)
+library(lsmeans)
 
 #############################
 #############################
@@ -27,6 +29,8 @@ canopycover <- read.csv("canopy_cover.csv")%>%
   filter(year==2021)%>% #have to do this here
   mutate(seedmix=ifelse(seedmix=="annuals", "annual", ifelse(seedmix=="perennials", "perennial", seedmix)))
 names(canopycover) <- c("Orchard.Age", "Block", "Management", "Seed.Mix", "Canopy", "Year")
+
+canopycover$Orchard.Age<-as.character(canopycover$Orchard.Age)
 #############################
 #############################
 
@@ -59,15 +63,25 @@ ggplot(canopyvisits, aes(x=Canopy, y=Number)) +
         axis.title=element_text(size=28))
 
 ## Plot of canopy vs. orchard age differences, and CLD
-ggplot(canopyvisits, aes(x=Orchard.Age, y=Canopy)) +
+ggplot(canopycover, aes(x=Orchard.Age, y=Canopy)) +
   geom_boxplot(aes(fill=as.factor(Orchard.Age)))
 
-canopycld<-canopyvisits%>%
-  mutate(trt= as.factor(paste(Canopy, Orchard.Age, sep="_")))%>%
+  
+canopycld<-canopycover%>%
+  mutate(trt= as.factor(paste(Orchard.Age, Canopy, sep="_")))%>%
   ungroup()
 
 #COMPACT LETTER DISPLAY
 cld(glht(aov(Canopy~trt, data=canopycld), mcp(trt="Tukey"))) 
+
+## testing canopy cover by orchard age
+
+mmcanopy3<-lme(Canopy~Orchard.Age, random = ~1|Block, data = canopycover, na.action=na.omit)
+summary(mmcanopy3)
+anova(mmcanopy3)
+lsmeans(mmcanopy3,
+        pairwise ~ Orchard.Age,
+        adjust="tukey")
 #############################
 #############################
 
@@ -97,8 +111,3 @@ anova(mmcanopy) #significant
 ##summary(mmcanopy2)
 #anova(mmcanopy2) 
 #seed mix yes, canopy no
-
-## testing canopy cover by orchard age
-mmcanopy3<-lme(Canopy~Orchard.Age, random = ~1|Block, data = canopyvisits, na.action=na.omit)
-summary(mmcanopy3)
-anova(mmcanopy3)
