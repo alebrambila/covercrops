@@ -5,6 +5,8 @@ library(tidyverse)
 library(ggpubr)
 library(googlesheets4)
 
+source('cover.R')
+
 #set the theme for all plots to black and white
 theme_set(theme_classic())
 gs4_deauth()
@@ -50,22 +52,36 @@ phenology_long0<-rbind(april, may, june, july, august)%>%
   mutate(senesence=ifelse(senesence==100, 1, senesence))%>%
   mutate(flailed=ifelse(flailed==100, 1, flailed))
 
+#richness and abundance per plot per month
+ip3<-read_sheet("https://docs.google.com/spreadsheets/d/10q37avMnA0x4wG69Joh1eMKdMAqsc7Zs4zIIKT1MNRg/edit?usp=sharing")%>%
+  mutate(numericmonth=ifelse(Month=="april", 1, 
+                             ifelse(Month=="may", 2, 
+                                    ifelse(Month=="june", 3, 
+                                           ifelse(Month=="july", 4, 5)))))%>%
+  group_by(numericmonth, block, orchard_age, management)%>%
+  summarize(richness=length(unique(Genus)), abundance=n())
+pk2<-plotkey%>%group_by(orchard_age, block, management)%>%summarize()
+ip3<-left_join(pk2, ip3)
+ip4<-select(ip3, -abundance)%>%spread(numericmonth, richness, fill=0)%>%
+  gather(numericmonth, richness, `1`, `2`, `3`, `4`, `5`)%>%
+  select(-4)
+cp<-left_join(mutate(ip4, numericmonth=as.numeric(numericmonth)), ip3)%>%
+  mutate(abundance=ifelse(is.na(abundance), 0, abundance))
+
+cpsum<-cp%>%
+  group_by(orchard_age, numericmonth)%>%
+  summarize(meanrich=mean(richness), serich=calcSE(richness), meanabun=mean(abundance), seabun=calcSE(abundance))
+
+
 #add up all of the 'flowering' plots by species, orchard, date
 phenology_count<-phenology_long0%>%
   group_by(orchardage, species, date)%>%
   summarize(flowering=sum(firstflower, flowering, lastflower))%>%
   filter(date>3)
-ggplot(phenology_count, aes(x=date, y=flowering))+
-  geom_line(aes(color=as.factor(orchardage)))+
-  facet_wrap(~species)
-
 
 phenology_countsum<-phenology_count%>%
   group_by(orchardage, date)%>%
   summarize(flowering=sum(flowering))
-ggplot(phenology_countsum, aes(x=date, y=flowering))+
-  geom_line(aes(color=as.factor(orchardage)))
-
 
 phenflor<-left_join(mutate(phenology_long0, orchardage=as.factor(orchardage)), floral)%>%
   mutate(anyflower=ifelse(firstflower==1|flowering==1|lastflower==1, 1, 0))%>%
@@ -73,10 +89,17 @@ phenflor<-left_join(mutate(phenology_long0, orchardage=as.factor(orchardage)), f
   mutate(infloresences=ifelse(flowering==1, infloresences, infloresences*.1))%>%
   select(1:5, 18)%>%
   mutate(infloresences=ifelse(is.na(infloresences),1,infloresences))
-ggplot(phenflor, aes(x=date, y=infloresences))+
-  geom_jitter(aes(color=as.factor(orchardage)))+
-  facet_wrap(~species)
 
+#add in zeroes
+phenflor_spread<-phenflor%>%
+  mutate(id=paste(date, orchardage, block, management, sep="_"))%>%
+  spread(species, infloresences, fill=0)%>%
+  gather(species, infloresences, 6:27)%>%
+  mutate(seedmix=ifelse(species%in%c("amsmen", "clapur", "colgra", "lotpur", "epiden", "gilcap", "plecon", "sanann"), "annuals", NA))%>%
+  mutate(seedmix=ifelse(species%in%c("achmil", "erilan", "geumac", "agogra", "lomnud", "potgra", "pruvul", "viopra"), "perennials", seedmix))%>%
+  mutate(seedmix=ifelse(species%in%c("vetch", "clover"), "industry", seedmix))%>%
+  filter(!is.na(seedmix))%>%
+  mutate(id=paste(id, seedmix, sep="_"))
 
 #number of flowers available in each plot
 phenflorsum<-phenflor%>%
@@ -96,13 +119,6 @@ pfsumsum<-phenflorsum1%>%
   group_by(orchard_age, numericmonth)%>%
   summarize(meanflor=mean(flor), seflor=calcSE(flor))
 
-ggplot()+
-    geom_jitter(data=phenflorsum1, aes(x=as.numeric(numericmonth), y=flor, color=as.factor(orchard_age)), width=.2, alpha=.5, size=.7)+
-    ylab("floral abundance per plot")+
-    geom_point(size=2, data=pfsumsum, aes(x=as.numeric(numericmonth), y=meanflor, color=as.factor(orchard_age)))+
-    geom_line(size=1, data=pfsumsum, aes(x=as.numeric(numericmonth), y=meanflor, color=as.factor(orchard_age)))+
-    geom_errorbar(data=pfsumsum, width=.1, aes(x=as.numeric(numericmonth), ymin=meanflor-seflor, ymax=meanflor+seflor, color=as.factor(orchard_age)))
-  
   
 
 #unique target spp flowering per plot (richness)
@@ -135,6 +151,47 @@ ggplot()+
 #unique target spp flowering per plot/floral (shannon)
 #spread phenflor and calculate shannon div of each plot over time 
 
+library(codyn)
+phenflor_shan<-left_join(phenflor_spread, community_diversity(phenflor_spread, abundance.var="infloresences", replicate.var="id", metric = c("Shannon")))%>%
+  select(1:4, 8, 9)%>%
+  unique()
+phenflor_shan$orchardage<-factor(phenflor_shan$orchardage, levels=c("15", "60", "40"))
+
+#SHANNON DIVERSITY OF FLOWERS WITHIN SPECEIS MIX X ORCHARD AGE
+ggplot(phenflor_shan, aes(x=date, (Shannon), color=seedmix))+
+  geom_rect(aes(xmin=3.5, xmax=6.5, ymin=0, ymax=1.3), color="white", fill="grey90", alpha=.3)+
+  geom_jitter(width=.2, alpha=.5, size=.7)+
+  ylab("Shannon diversity of floral resources")+
+  stat_summary(geom="line", aes(color=seedmix), fun="mean", size=1)+
+  stat_summary(geom="point", aes(color=seedmix), fun="mean", size=1.5)+
+  #  geom_point(size=2, data=pfsumsum, aes(x=as.numeric(numericmonth), y=meanflor, color=as.factor(orchard_age)))+
+  #  geom_line(size=1, data=pfsumsum, aes(x=as.numeric(numericmonth), y=meanflor, color=as.factor(orchard_age)))+
+  # geom_errorbar(data=pfsumsum, width=.1, aes(x=as.numeric(numericmonth), ymin=meanflor-seflor, ymax=meanflor+seflor, color=as.factor(orchard_age)))+
+  facet_wrap(~orchardage)
+
+phenflor_abun<-phenflor_spread%>%
+  group_by(orchardage, block, management, date, seedmix)%>%
+  summarize(infloresences=sum(infloresences))
+
+phenflor_abun$orchardage<-factor(phenflor_abun$orchardage, levels=c("15", "60", "40"))
+ggplot(data=phenflor_abun, aes(x=as.numeric(date), y=infloresences+1, color=as.factor(seedmix)))+
+  geom_rect(aes(xmin=3.5, xmax=6.5, ymin=1, ymax=1500), color="white", fill="grey90", alpha=.3)+
+  stat_summary(geom="line", aes(group=interaction(species)), fun="mean", data=phenflor_spread, alpha=.25, size=.45)+
+  geom_jitter(width=.2, alpha=.5, size=.7)+
+  ylab("floral abundance per plot")+
+  stat_summary(geom="line", aes(color=seedmix), fun="mean", size=1)+
+  stat_summary(geom="point", aes(color=seedmix), fun="mean", size=1.5)+
+  facet_wrap(~orchardage)+ scale_y_continuous(trans='log10')
+
+#sanity check management
+phenflor_abun$orchardage<-factor(phenflor_abun$orchardage, levels=c("15", "60", "40"))
+ggplot(data=phenflor_abun, aes(x=as.numeric(date), y=infloresences+1, color=as.factor(seedmix)))+
+  stat_summary(geom="line", aes(group=interaction(species)), fun="mean", data=phenflor_spread, alpha=.25, size=.45)+
+  geom_jitter(width=.2, alpha=.5, size=.7)+
+  ylab("floral abundance per plot")+
+  stat_summary(geom="line", aes(color=seedmix), fun="mean", size=1)+
+  stat_summary(geom="point", aes(color=seedmix), fun="mean", size=1.5)+
+  facet_grid(management~orchardage)+ scale_y_continuous(trans='log10')
 
 
 phenology_long<-phenology_long0%>%
@@ -294,280 +351,72 @@ ggplot(insect_phenology,
   scale_x_discrete(breaks=levels(factor(insect_phenology$Month)), limits=c("april", "may", "june", "july", "august"))
 
 
-
-ggplot(insect_phenology, 
-       aes(x = numericmonth, y=Genus)) +
-  geom_violin(position="dodge",aes( violinwidth=orchardtotal, fill=as.factor(orchardage)),adjust=4, scale="count")+
-  geom_point(aes(size=orchardtotal, color=as.factor(orchardage)))#+
-facet_grid(~Genus, scales="fixed")#+  scale_y_continuous(limits=c(0,45))  +xlab("month")+ylab("total")+
-scale_x_discrete(breaks=levels(factor(insect_phenology$Month)), limits=c("april", "may", "june", "july", "august"))
-
-ggplot(insect_phenology, 
-       aes(x = numericmonth, y=orchardtotal)) +
-  geom_density(position="stack", stat="identity", aes(fill=as.factor(orchardage)))+
-  geom_point(aes(size=orchardtotal, color=as.factor(orchardage)))+
-facet_grid(~Genus, scales="fixed")#+  scale_y_continuous(limits=c(0,45))  +xlab("month")+ylab("total")+
-scale_x_discrete(breaks=levels(factor(insect_phenology$Month)), limits=c("april", "may", "june", "july", "august"))
-
-
 ip2<-select(insect_phenology, 1, 2, 3, 8, 9, 10, 7, orchardage)%>%
   filter(orchardage==15)%>%
   gather(orchardage, total, 4:6)%>%
   ungroup()
 
-ggplot(ip2, 
-       aes(x = Genus, y=numericmonth)) +
-  geom_violin(position="dodge",aes( violinwidth=total, fill=as.factor(orchardage)),adjust=1, scale="count")#+
-geom_point(aes(size=total, color=as.factor(orchardage)))#+
-facet_wrap(~Genus, scales="free")#+  scale_y_continuous(limits=c(0,45))  +xlab("month")+ylab("total")+
-scale_x_discrete(breaks=levels(factor(insect_phenology$Month)), limits=c("april", "may", "june", "july", "august"))
+poll_div<-read_sheet("https://docs.google.com/spreadsheets/d/10q37avMnA0x4wG69Joh1eMKdMAqsc7Zs4zIIKT1MNRg/edit?usp=sharing")%>%
+  filter(Year==2021)%>%
+  mutate(seedmix=ifelse(seedmix=="annual", "annuals", ifelse(seedmix=="perennial", "perennials", seedmix)))
+ 
+poll_div1<-full_join(plotkey, poll_div)%>%
+  select(1:5, 7, 9, 10, 12)%>%
+  mutate(numericmonth=ifelse(Month=="april", 4, 
+                             ifelse(Month=="may", 5, 
+                                    ifelse(Month=="june", 6, 
+                                           ifelse(Month=="july", 7, 8)))))%>%
+  mutate(Count=ifelse(is.na(Count), 0, Count))
+poll_divsum<-poll_div1%>%
+  group_by(orchard_age, block, management, seedmix, numericmonth)%>%
+  summarize(richness=sum(Count))%>%
+  spread(numericmonth, richness, fill=0)%>%
+  gather(numericmonth, richness, 5:9)%>%
+  filter(seedmix!="megamix")%>%
+  mutate(rem=paste(management, numericmonth, sep="_"))%>%
+  filter(!rem%in%c("flailed_7", "flailed_8", "scraped_7", "scraped_8")) #these will be zero, remove them. 
+poll_divsum$seedmix<-factor(poll_divsum$seedmix, levels=c("annuals", "industry", "perennials", "control"))
+poll_divsum$orchard_age<-factor(poll_divsum$orchard_age, levels=c(15, 60, 40))
 
 
-library(ggridges)
-
-ggplot(ip2, 
-       aes(x = numericmonth, y=orchardage)) +
-  geom_ridgeline(aes(height=total, fill=orchardage), scale=1)+
-facet_wrap(~Genus)
-
-#ggplot(subset(phenology_xl, species=="achmil"), aes(x = date, y=proportion, fill = stage)) +
-#  geom_bar(aes(fill=stage), stat="identity") +
-# # scale_fill_brewer(palette = "Blues") +
-#  facet_grid(management~orchardage) 
-
-#richness and abundance per plot per month
-ip3<-read_sheet("https://docs.google.com/spreadsheets/d/10q37avMnA0x4wG69Joh1eMKdMAqsc7Zs4zIIKT1MNRg/edit?usp=sharing")%>%
-  mutate(numericmonth=ifelse(Month=="april", 1, 
-                             ifelse(Month=="may", 2, 
-                                    ifelse(Month=="june", 3, 
-                                           ifelse(Month=="july", 4, 5)))))%>%
-  group_by(numericmonth, block, orchard_age, management)%>%
-  summarize(richness=length(unique(Genus)), abundance=n())
-pk2<-plotkey%>%group_by(orchard_age, block, management)%>%summarize()
-ip3<-left_join(pk2, ip3)
-ip4<-select(ip3, -abundance)%>%spread(numericmonth, richness, fill=0)%>%
-  gather(numericmonth, richness, `1`, `2`, `3`, `4`, `5`)%>%
-  select(-4)
-cp<-left_join(mutate(ip4, numericmonth=as.numeric(numericmonth)), ip3)%>%
-  mutate(abundance=ifelse(is.na(abundance), 0, abundance))
-
-cpsum<-cp%>%
-  group_by(orchard_age, numericmonth)%>%
-  summarize(meanrich=mean(richness), serich=calcSE(richness), meanabun=mean(abundance), seabun=calcSE(abundance))
-
-#pollinator richness (genera)
-ggplot()+
-  geom_jitter(data=cp, aes(x=numericmonth, y=richness, color=as.factor(orchard_age)), width=.2, alpha=.5, size=.7)+
-  ylab("insect genus richness per plot")+
-  geom_point(size=2, data=cpsum, aes(x=numericmonth, y=meanrich, color=as.factor(orchard_age)))+
-  geom_line(size=1, data=cpsum, aes(x=numericmonth, y=meanrich, color=as.factor(orchard_age)))+
-  geom_errorbar(data=cpsum, width=.1, aes(x= numericmonth, ymin=meanrich-serich, ymax=meanrich+serich, color=as.factor(orchard_age)))
-  
-
-#pollinator abundance (genera)
-ggplot()+
-  geom_jitter(data=cp, aes(x=numericmonth, y=abundance, color=as.factor(orchard_age)), width=.2, alpha=.5, size=.7)+
-  ylab("insect genus richness per plot")+
-  geom_point(size=2, data=cpsum, aes(x=numericmonth, y=meanabun, color=as.factor(orchard_age)))+
-  geom_line(size=1, data=cpsum, aes(x=numericmonth, y=meanabun, color=as.factor(orchard_age)))+
-  geom_errorbar(data=cpsum, width=.1, aes(x= numericmonth, ymin=meanabun-seabun, ymax=meanabun+seabun, color=as.factor(orchard_age)))
+### POLLINATOR SPECIES RICHNESS (from collections)
+ggplot(poll_divsum, aes(x=as.numeric(numericmonth), y=richness, color=as.factor(seedmix)))+
+  geom_rect(aes(xmin=3.5, xmax=6.5, ymin=-.5, ymax=8), color="white", fill="grey90", alpha=.3)+
+  geom_jitter(aes(color=seedmix), width=.2, alpha=.5, size=.7)+
+  scale_color_manual(values=c("#F8766D", "#00BA38", "#619CFF", "orange"))+
+  ylab("Insect genus richness per plot")+
+  stat_summary(geom="line", aes(color=seedmix), fun="mean", size=1)+
+  stat_summary(geom="point", aes(color=seedmix), fun="mean", size=1.5)+
+  facet_wrap(~orchard_age) 
 
 #observed pollinators
 op<-read_sheet("https://docs.google.com/spreadsheets/d/1IeWQPtXPJ-MrIua0wZswSJNRnU3bvmkDKtTc5lBzEbk/edit?usp=sharing")%>%
-  mutate(numericmonth=ifelse(Month=="april", 1, 
-                             ifelse(Month=="may", 2, 
-                                    ifelse(Month=="june", 3, 
-                                           ifelse(Month=="july", 4, 5)))))%>%
-  group_by(numericmonth, block, orchard_age, management)%>%
+  mutate(numericmonth=ifelse(Month=="april", 4, 
+                             ifelse(Month=="may", 5, 
+                                    ifelse(Month=="june", 6, 
+                                           ifelse(Month=="july", 7, 8)))))%>%
+  group_by(numericmonth, block, orchard_age, management, seedmix)%>%
+  mutate(seedmix=ifelse(seedmix=="annual", "annuals", ifelse(seedmix=="perennial", "perennials", seedmix)))%>%
   summarize(richness=length(unique(Morphospecies)), abundance=sum(Count))
-op1<-full_join(pk2, op)
-
-op2<-select(op1, -abundance)%>%spread(numericmonth, richness, fill=0)%>%
-  gather(numericmonth, richness, `1`, `2`, `3`, `4`, `5`)%>%
-  select(-4)
-op3<-left_join(mutate(op2, numericmonth=as.numeric(numericmonth)), op1)%>%
-  mutate(abundance=ifelse(is.na(abundance), 0, abundance))
-
-opsum<-op3%>%
-  group_by(orchard_age, numericmonth)%>%
-  summarize(meanrich=mean(richness), serich=calcSE(richness), meanabun=mean(abundance), seabun=calcSE(abundance))
-
+op1<-full_join(plotkey, op)
+op2<-select(op1, -richness)%>%
+  spread(numericmonth, abundance, fill=0)%>%
+  gather(numericmonth, abundance, 5:9)%>%
+  mutate(rem=paste(management, numericmonth, sep="_"))%>%
+  filter(seedmix!="megamix")%>%
+  filter(!rem%in%c("flailed_7", "flailed_8", "scraped_7", "scraped_8")) #these will be zero, remove them. 
+op2$orchard_age<-factor(op2$orchard_age, levels=c(15, 60, 40))
+op2$seedmix<-factor(op2$seedmix, levels=c("annuals", "industry", "perennials", "control"))
 
 #pollinator abundance (observations)
-ggplot(op3, aes(x=numericmonth, y=abundance))+
-  geom_jitter(aes(color=as.factor(orchard_age)), width=.2)+
-  ylab("insect observations per plot")+
-  geom_smooth(aes(color=as.factor(orchard_age)), se=F)
-
-ggplot()+
-  geom_jitter(data=op3, aes(x=numericmonth, y=abundance, color=as.factor(orchard_age)), width=.2, alpha=.5, size=.7)+
-  ylab("insect observations per plot")+
-  geom_point(size=2, data=opsum, aes(x=numericmonth, y=meanabun, color=as.factor(orchard_age)))+
-  geom_line(size=1, data=opsum, aes(x=numericmonth, y=meanabun, color=as.factor(orchard_age)))+
-  geom_errorbar(data=opsum, width=.1, aes(x= numericmonth, ymin=meanabun-seabun, ymax=meanabun+seabun, color=as.factor(orchard_age)))
-
-
-
-#pollinator diversity (observations morphospecies)
-ggplot(op3, aes(x=numericmonth, y=richness))+
-  geom_jitter(aes(color=as.factor(orchard_age)), width=.2)+
-  ylab("insect morphospecies richness per plot")+
-  geom_smooth(aes(color=as.factor(orchard_age)), se=F)
-
-ggplot()+
-  geom_jitter(data=op3, aes(x=numericmonth, y=richness, color=as.factor(orchard_age)), width=.2, alpha=.5, size=.7)+
-  ylab("insect morphospecies richness per plot")+
-  geom_point(size=2, data=opsum, aes(x=numericmonth, y=meanrich, color=as.factor(orchard_age)))+
-  geom_line(size=1, data=opsum, aes(x=numericmonth, y=meanrich, color=as.factor(orchard_age)))+
-  geom_errorbar(data=opsum, width=.1, aes(x= numericmonth, ymin=meanrich-serich, ymax=meanrich+serich, color=as.factor(orchard_age)))
-
-
-#correlations between pollinators and plants (abun/rich)
-florsum<-full_join(phenflorsum1, mutate(phenrich, orchard_age=as.factor(orchard_age)))
-op4<-mutate(op3, insectrich=richness, insectabun=abundance)%>%
-  mutate(numericmonth=numericmonth+3)%>%
-  select(-richness, -abundance)
-cors<-left_join(mutate(florsum, numericmonth=as.numeric(numericmonth)), mutate(op4, orchard_age=as.factor(orchard_age)))%>%
-  ungroup()
-
-library(car)
-scatterplotMatrix(~flor+richness+insectrich+insectabun, data=cors , 
-                  reg.line="" , smoother="", 
-                  smoother.args=list(col="grey") , cex=1.5 , 
-                  pch=c(15,16,17) , 
-                  main="Scatter plot with Three Cylinder Options"
-)
-pairs(~flor+richness+insectrich+insectabun, data=cors, bg=rainbow(3)[cors$orchard_age],col=rainbow(3)[cors$orchard_age])
-
-library(corrplot)
-corrplot(cor(select(cors, 5, 6, 7, 8)),        # Correlation matrix
-         method = "number", # Correlation plot method
-         type = "lower",    # Correlation plot style (also "upper" and "lower")
-         diag = TRUE,      # If TRUE (default), adds the diagonal
-         tl.col = "black", # Labels color
-         bg = "white",     # Background color
-         title = "",       # Main title
-         col = NULL)       # Color palette
-
-ggplot(cors, aes(x=flor+1, y=insectabun+1, color=orchard_age))+
-  geom_jitter()+#stat_regline_equation()+
-  #geom_point(aes(y=insectrich), shape=2)+
-  geom_smooth(method="lm", se=F)+stat_cor()+
-  scale_y_continuous(trans='log10')+scale_x_continuous(trans='log10')+
-  xlab("floral abundance per plot")+ylab("insect observations per plot")
-
-ggplot(cors, aes(x=richness+1, y=insectrich+1, color=orchard_age))+
-  geom_jitter()+#stat_regline_equation()+
-  #geom_point(aes(y=insectrich), shape=2)+
-  geom_smooth(method="lm", se=F)+stat_cor()+
-  scale_x_continuous(trans='log10')+scale_y_continuous(trans='log10')+
-  xlab("unique target species flowering per plot")+ylab("insect morphospecies richness per plot")
-
-
-#ggplot(cors, aes(x=flor+1, y=richness+1, color=orchard_age))+
-#  geom_jitter()+#stat_regline_equation()+
-##  #geom_point(aes(y=insectrich), shape=2)+
-#  geom_smooth(method="lm", se=F)+stat_cor()+
-#  scale_y_continuous(trans='log10')+scale_x_continuous(trans='log10')
-
-#ggplot(cors, aes(x=richness+1, y=insectabun+1, color=orchard_age))+
-#  geom_jitter()+#stat_regline_equation()+
-#  #geom_point(aes(y=insectrich), shape=2)+
-#  geom_smooth(method="lm", se=F)+stat_cor()+
-#  scale_y_continuous(trans='log10')+scale_x_continuous(trans='log10')
-
-#ggplot(cors, aes(x=flor+1, y=insectrich+1, color=orchard_age))+
-#  geom_jitter()+#stat_regline_equation()+
-  ##geom_point(aes(y=insectrich), shape=2)+
-#  geom_smooth(method="lm", se=F)+stat_cor()+
-#  scale_x_continuous(trans='log10')#+scale_y_continuous(trans='log10')
-
-
-#STOP HERE#### 
-# phenology for pollinators
-#each species, each trt the entire window of flowering, point at peak flowering, size=floral
-
-phenology_flowering<-phenology_long0%>%
-  group_by(orchardage, block, management, species, date)%>%
-  mutate(allflower=sum(firstflower, lastflower, flowering))%>%
-  filter(allflower!=0)%>%
-  mutate(anyflower=1)%>%
-  select(1:5, allflower, flowering, anyflower)%>% #allflower is sum of all types of flowering, flowering is peak, any is 1 if all >0
-  mutate(orchardage=as.factor(orchardage))
-
-
-
-
-phenology_flowering1<-left_join(subset(phenology_flowering, flowering!=0), floral)
-group_by(orchardage, block, management, species)%>%
-  summarize()
-phenology_flowering2<- left_join(phenology_flowering1, floral)
-
-ggplot(phenology_flowering, aes(date, species)) +geom_point(color="grey80")+ 
-  geom_jitter(width=.1, data=subset(phenology_flowering1, anyflower==1),
-              aes( x=date, y=species, size=infloresences)) +
-  geom_line(color="grey80") +
-  facet_grid(~orchardage)
-
-ggplot(phenology_flowering, aes(date, species)) +geom_density(color="grey80")+ 
-  geom_jitter(width=.1, data=subset(phenology_flowering1, anyflower==1),
-              aes( x=date, y=species, size=infloresences)) +
-  geom_line(color="grey80") +
-  facet_grid(~orchardage)
-
-
-
-#sum up # of plots in any stage of flowering + peak flowering
-pfsum.plot<-phenology_flowering%>%
-  group_by(orchardage, species, date)%>%
-  summarize(any=sum(anyflower), peak=sum(flowering))
-
-
-ggplot(pfsum.plot, aes(x=date, y=any))+ geom_violin() +
-  geom_bar(stat="identity")+geom_line()+
-  facet_grid(orchardage~species)
-
-
-ggplot(subset(pfsum.plot, !species%in%c("barley", "cartum", "dancal", "fesroe", "lotpur", 
-                                        "oats", "vetch", "viopra")), aes(x=date, y=any))+ 
-  geom_bar(stat="identity", aes(fill=orchardage))+
-  # geom_point(data=)
-  facet_grid(~species)
-
-pfsum.inf<-phenology_flowering1%>%
-  group_by(orchardage, species, date)%>%
-  filter(!is.na(infloresences))%>%
-  mutate(date=ifelse(species=="gilcap"&orchardage==40, 6, 
-                     ifelse(species=='geumac'&(orchardage==60|orchardage==15), 5, 
-                            ifelse(species=="geumac"&orchardage==40, 6,
-                                   ifelse(species=="epiden"&orchardage==15, 8, 
-                                          ifelse(species=="epiden"&orchardage==60, 6, date))))))%>%
-  summarize(meaninf=mean(infloresences, na.rm=T),
-            seinf=calcSE(infloresences), 
-            suminf=sum(infloresences, na.rm=T), 
-            total=n())
-
-grid.arrange(
-  ggplot(subset(pfsum.plot, !species%in%c("barley", "cartum", "dancal", "fesroe", "lotpur", 
-                                          "oats", "vetch", "viopra")), aes(x=date, y=any))+ 
-    geom_bar(stat="identity", aes(fill=orchardage))+ylab("number of flowering plots")+
-    # geom_point(data=)
-    facet_grid(~species),
-  ggplot(subset(pfsum.inf, !species%in%c("barley", "cartum", "dancal", "fesroe", "lotpur", 
-                                         "oats", "vetch", "viopra")), aes(x=date, y=meaninf))+ 
-    # geom_bar(stat="identity", aes(fill=orchardage))+
-    geom_point(aes(color=orchardage))+scale_y_continuous(trans='log10')+ylab("mean infloresences/plot at peak flowering")+
-    geom_errorbar(aes(ymin=meaninf-seinf, ymax=meaninf+seinf))+
-    facet_grid(~species),
-  nrow=2)
-
-
-
-ggplot(subset(pfsum.plot, !species%in%c("barley", "cartum", "dancal", "fesroe", "lotpur", 
-                                        "oats", "vetch", "viopra")), aes(x=date, y=peak))+ 
-  geom_bar(stat="identity", aes(fill=orchardage))+
-  facet_grid(~species)
-
+ggplot(subset(op2, !is.na(seedmix)), aes(x=as.numeric(numericmonth), y=abundance+1))+
+  geom_rect(aes(xmin=3.5, xmax=6.5, ymin=1, ymax=100), fill="grey90", alpha=.3)+
+  geom_jitter(aes(color=seedmix), width=.2, alpha=.5, size=.7)+
+  scale_color_manual(values=c("#F8766D", "#00BA38", "#619CFF", "orange"))+
+  ylab("Insect visitations per plot")+
+  stat_summary(geom="line", aes(color=seedmix), fun="mean", size=1)+
+  stat_summary(geom="point", aes(color=seedmix), fun="mean", size=1.5)+
+  facet_wrap(~orchard_age) +scale_y_continuous(trans='log10')
 
 
 
