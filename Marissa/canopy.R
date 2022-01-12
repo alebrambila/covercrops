@@ -1,5 +1,8 @@
 library(tidyverse)
 library(dplyr)
+calcSE <- function(x){
+  x <- x[!is.na(x)]
+  sd(x)/sqrt(length(x))}
 # canopy cover
 canopy<-read_csv("canopy_cover.csv")%>%
   #weighted adjustment for blocks 4-6 of 15 that are shaded by xmas trees
