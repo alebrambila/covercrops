@@ -15,7 +15,7 @@ library(multcomp)
 #############################
 #############################
 ## Import data
-## Clean up column names and columns
+## Clean up column names and morphospecies groups
 
 observedpollinators <- read.csv("observedpollinators_2021.csv") %>%
   ##Updated morphospecies categories combine 'ant' and 'wasp' into a 'Hymenoptera' group,
