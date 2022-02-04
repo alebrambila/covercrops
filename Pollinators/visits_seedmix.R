@@ -17,7 +17,14 @@ library(multcomp)
 ## Import data
 ## Clean up column names and columns
 
-observedpollinators <- read.csv("observedpollinators_2021.csv")
+observedpollinators <- read.csv("observedpollinators_2021.csv") %>%
+  ##Updated morphospecies categories combine 'ant' and 'wasp' into a 'Hymenoptera' group,
+  ##as well as combining 'aphid' into 'true bug' and 'mosquito' into 'other fly'
+  mutate(Morphospecies=ifelse(Morphospecies=="ant", "hymenoptera", ifelse(Morphospecies=="wasp", 
+                                                             "hymenoptera",
+                                                             ifelse(Morphospecies=="aphid","true bug", 
+                                                                    ifelse(Morphospecies=="mosquito","other fly", Morphospecies)))))
+  
 names(observedpollinators) <- c ("Month", "Orchard.Age", "Block", "Management", "Seed.Mix", "Host.Plant", "Morphospecies", "Number", "Notes")
 
 #############################
@@ -94,6 +101,15 @@ ggplot(subset(taxonomicobservations1, seedmix2!="megamix"), aes(x=seedmix2, y=Nu
   labs(x="Host Plant Groups", y="Pollinator Visitations (per management plot)") +
   theme(axis.text=element_text(size=22),
         axis.title=element_text(size=28))
+#############################
+#############################
+## Table 2 for the cover crop paper draft
+## Finding the preferred host for each morphospecies, e.g. finding what plant species
+## was visited most by each morphospecies group
+
+morphospecieshosts <- observedpollinators %>%
+  group_by(Morphospecies, Host.Plant)%>%
+  summarise(Number = sum(Number))
 
 #############################
 #############################
