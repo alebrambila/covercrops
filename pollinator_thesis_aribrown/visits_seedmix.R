@@ -111,6 +111,12 @@ morphospecieshosts <- observedpollinators %>%
   group_by(Morphospecies, Host.Plant)%>%
   summarise(Number = sum(Number))
 
+## Finding peak months for each morphospecies
+
+morphospeciespeakmonth <- observedpollinators %>%
+  group_by(Morphospecies, Month) %>%
+  summarise(Number = sum(Number))
+
 #############################
 #############################
 ## Statistics
