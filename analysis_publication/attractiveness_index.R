@@ -113,7 +113,9 @@ phenflor_spread<-phenflor%>%
   mutate(seedmix=ifelse(species%in%c("achmil", "erilan", "geumac", "agogra", "lomnud", "potgra", "pruvul", "viopra"), "perennials", seedmix))%>%
   mutate(seedmix=ifelse(species%in%c("vetch", "clover"), "industry", seedmix))%>%
   filter(!is.na(seedmix))%>%
-  mutate(id=paste(id, seedmix, sep="_"))
+  mutate(id=paste(id, seedmix, sep="_")) %>%
+  mutate(rem=paste(management, date, sep="_"))%>%
+  filter(!rem%in%c("flailed_7", "flailed_8", "scraped_7", "scraped_8")) #these will be zero, remove them.
 
 #number of flowers available in each seed mix per plot (over all time!)
 phenflorsum0<-phenflor_spread%>%
@@ -121,7 +123,10 @@ phenflorsum0<-phenflor_spread%>%
   summarize(flor=sum(infloresences))%>%
   mutate(orchard_age=orchardage)%>%
   ungroup()%>%
-  select(-orchardage)
+  select(-orchardage) %>%
+  filter(flor>0)
+
+##^^ I want to remove any plots that have no flowers ever in them
 
 #############
 ## pollinator abundance per plot per month
@@ -143,6 +148,7 @@ op<-read_sheet("https://docs.google.com/spreadsheets/d/1IeWQPtXPJ-MrIua0wZswSJNR
 op1<-full_join(plotkey, op)
 op2<-select(op1, -richness, -Morphospecies)%>%
   mutate(abundance=ifelse(is.na(abundance), 0, abundance)) %>%
+  mutate(morphospecies=ifelse(is.na(morphospecies), 0, morphospecies))%>%
   filter(seedmix!="megamix")
 op2$orchard_age<-factor(op2$orchard_age, levels=c(15, 60, 40))
 
@@ -150,7 +156,9 @@ op2$orchard_age<-factor(op2$orchard_age, levels=c(15, 60, 40))
 ## find attractiveness index 
 ## join phenflorsum (number infloresences per plot per month) and op (pollinator visits per plot per month)
 
-attindex<-left_join(phenflorsum0, op2)
+attindex<-left_join(phenflorsum0, op2) %>%
+  mutate(abundance=ifelse(is.na(abundance), 0, abundance)) %>%
+  mutate(morphospecies=ifelse(is.na(morphospecies), 0, morphospecies))
 
 ## attractiveness index = # pollinator visits for each morphospecies / # flowers
 ## ^^ pollinators and flowers are both per seed mix per management plot summed over all time
