@@ -218,3 +218,11 @@ cld(glht(aovperennial.60, mcp(Host.Plant="Tukey"))) #geum and achillea
 ## each orchard age:
 aovperennialrichorchard <- aov(richness~Host.Plant*as.factor(Orchard.Age), data=perennialrichness)
 tukey4 <- TukeyHSD(aovperennialrichorchard, conf.level=.95)
+#############################
+#############################
+## For paper table
+## Finding the total number of unique genera/taxonomic units that visited each plant species
+
+plantrichness <- collectedpollinators %>%
+  group_by(Host.Plant) %>%
+  summarise(richness=length(unique(Genus)))

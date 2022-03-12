@@ -117,6 +117,12 @@ morphospeciespeakmonth <- observedpollinators %>%
   group_by(Morphospecies, Month) %>%
   summarise(Number = sum(Number))
 
+## Other table for cover crop draft
+## Finding number of total visits for each plant species
+plantvisits <- observedpollinators %>%
+  group_by(Host.Plant)%>%
+  summarise(Number=sum(Number))
+
 #############################
 #############################
 ## Statistics
