@@ -123,10 +123,7 @@ phenflorsum0<-phenflor_spread%>%
   summarize(flor=sum(infloresences))%>%
   mutate(orchard_age=orchardage)%>%
   ungroup()%>%
-  select(-orchardage) %>%
-  filter(flor>0)
-
-##^^ I want to remove any plots that have no flowers ever in them
+  select(-orchardage)
 
 #############
 ## pollinator abundance per plot per month
@@ -135,28 +132,31 @@ op<-read_sheet("https://docs.google.com/spreadsheets/d/1IeWQPtXPJ-MrIua0wZswSJNR
   mutate(numericmonth=ifelse(Month=="april", 4, 
                              ifelse(Month=="may", 5, 
                                     ifelse(Month=="june", 6, 
-                                           ifelse(Month=="july", 7, 8)))))%>%
-  group_by(block, orchard_age, management, seedmix, Morphospecies)%>%
+                                           ifelse(Month=="july", 7, 8))))) %>%
   mutate(seedmix=ifelse(seedmix=="annual", "annuals", ifelse(seedmix=="perennial", "perennials", seedmix)))%>%
-  summarize(richness=length(unique(Morphospecies)), abundance=sum(Count)) %>%
   mutate(morphospecies=ifelse(Morphospecies=="ant", "hymenoptera", ifelse(Morphospecies=="wasp", 
                                                                           "hymenoptera",
                                                                           ifelse(Morphospecies=="aphid","true bug", 
-                                                                                 ifelse(Morphospecies=="mosquito","other fly", Morphospecies)))))
+                                                                                 ifelse(Morphospecies=="mosquito","other fly", Morphospecies))))) %>%
+  group_by(block, orchard_age, management, `Host Plant`, morphospecies)%>%
+  summarize(richness=length(unique(morphospecies)), abundance=sum(Count))
 ##^^ updating morphospecies categories based on Ari's supplemental thesis tables
 
-op1<-full_join(plotkey, op)
+op1<-left_join(plotkey, op)
 op2<-select(op1, -richness, -Morphospecies)%>%
   mutate(abundance=ifelse(is.na(abundance), 0, abundance)) %>%
   mutate(morphospecies=ifelse(is.na(morphospecies), 0, morphospecies))%>%
-  filter(seedmix!="megamix")
+  filter(seedmix!="megamix") %>%
+  unique()
 op2$orchard_age<-factor(op2$orchard_age, levels=c(15, 60, 40))
+op_spread<-spread(op2, morphospecies, abundance)
+##note: need to change species names in pollinators data to species codes to match phenology
 
 #############
 ## find attractiveness index 
 ## join phenflorsum (number infloresences per plot per month) and op (pollinator visits per plot per month)
 
-attindex<-left_join(phenflorsum0, op2) %>%
+attindex<-left_join(op2, phenflorsum0) %>%
   mutate(abundance=ifelse(is.na(abundance), 0, abundance)) %>%
   mutate(morphospecies=ifelse(is.na(morphospecies), 0, morphospecies))
 
@@ -165,5 +165,14 @@ attindex<-left_join(phenflorsum0, op2) %>%
 
 attindex0 <- attindex%>%
   group_by(morphospecies, seedmix)%>%
-  mutate(attractiveness=abundance/flor)%>%
+  mutate(attractiveness=abundance/flor)
   summarize(meanattractiveness=mean(attractiveness))
+
+#############
+##TO DO 3/24/2022:
+  ##Change plant species names to species codes in observed pollinator dataset
+  ##Add zeroes to observed pollinator dataset (use spread function to add '0' to management plots
+  ##with no pollinator observations)
+  ##Re-join plant floral count data and observed pollinator data, fill in zeroes, and re-calculate 
+  ##attractiveness index for each plant species
+  
