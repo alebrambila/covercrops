@@ -119,7 +119,7 @@ phenflor_spread<-phenflor%>%
 
 #number of flowers available in each seed mix per plot (over all time!)
 phenflorsum0<-phenflor_spread%>%
-  group_by(orchardage, block, management, seedmix)%>%
+  group_by(orchardage, block, management, species)%>% #ALEJANDRO changed seedmix to species
   summarize(flor=sum(infloresences))%>%
   mutate(orchard_age=orchardage)%>%
   ungroup()%>%
@@ -143,22 +143,114 @@ op<-read_sheet("https://docs.google.com/spreadsheets/d/1IeWQPtXPJ-MrIua0wZswSJNR
 ##^^ updating morphospecies categories based on Ari's supplemental thesis tables
 
 op1<-left_join(plotkey, op)
-op2<-select(op1, -richness, -Morphospecies)%>%
+op2<-select(op1, -richness)%>%
   mutate(abundance=ifelse(is.na(abundance), 0, abundance)) %>%
-  mutate(morphospecies=ifelse(is.na(morphospecies), 0, morphospecies))%>%
+  #mutate(morphospecies=ifelse(is.na(morphospecies), 0, morphospecies))%>%
   filter(seedmix!="megamix") %>%
+  select(-seedmix)%>%
   unique()
 op2$orchard_age<-factor(op2$orchard_age, levels=c(15, 60, 40))
-op_spread<-spread(op2, morphospecies, abundance)
+op_spread<-spread(op2, morphospecies, abundance, fill=0)%>%
+  gather(morphospecies, abundance, 6:19)%>%
+  select(-5)%>%
+  mutate(species=(ifelse(`Host Plant`=="achillea", "achmil", 
+                         ifelse(`Host Plant`=="eriophyllum", "erilan", 
+                                ifelse(`Host Plant`=="gilia", "gilcap", 
+                                       ifelse(`Host Plant`=="prunella", "pruvul", 
+                                              ifelse(`Host Plant`=="epilobium", "epiden", 
+                  ifelse(`Host Plant`=="clarkia", "clapur", 
+                         ifelse(`Host Plant`=="plectritis", "plecon", 
+                                ifelse(`Host Plant`=="collomia", "colgra", 
+                                       ifelse(`Host Plant`=="geum", "geumac", 
+                                              ifelse(`Host Plant`=="lomatium", "lomnut", 
+                  ifelse(`Host Plant`=="amsinckia", "amsmen", 
+                         ifelse(`Host Plant`=="potentilla", "potgra", `Host Plant`))))))))))))))%>%
+  select(-4)
 ##note: need to change species names in pollinators data to species codes to match phenology
+
 
 #############
 ## find attractiveness index 
 ## join phenflorsum (number infloresences per plot per month) and op (pollinator visits per plot per month)
 
-attindex<-left_join(op2, phenflorsum0) %>%
+attindex_plot<-full_join(phenflorsum0, op_spread) %>%
+  spread(morphospecies, abundance, fill=0) %>%
+  gather(morphospecies, abundance, 7:19)%>%
   mutate(abundance=ifelse(is.na(abundance), 0, abundance)) %>%
-  mutate(morphospecies=ifelse(is.na(morphospecies), 0, morphospecies))
+  mutate(flor=ifelse(is.na(flor), 0, flor)) %>%
+  select(-6, -7)%>% #this is at the plot level
+  group_by(morphospecies, species)%>%
+  filter(flor!=0)%>%
+  mutate(attractiveness=abundance/flor)%>%
+  filter(!is.na(attractiveness))%>%
+  summarize(meanattractiveness=mean(attractiveness))
+
+#viz
+ggplot(attindex_plot, aes(x=morphospecies, y=meanattractiveness)) +
+  geom_jitter(aes(color=species), width=.1)+
+  scale_y_continuous(trans='log10')
+
+attindex_block<-full_join(phenflorsum0, op_spread) %>%
+  spread(morphospecies, abundance, fill=0) %>%
+  gather(morphospecies, abundance, 7:19)%>%
+  mutate(abundance=ifelse(is.na(abundance), 0, abundance)) %>%
+  mutate(flor=ifelse(is.na(flor), 0, flor)) %>%
+  select(-6, -7)%>%
+  group_by(orchard_age, block, species, morphospecies)%>%
+  summarize(abundance=sum(abundance), flor=sum(flor)) %>%#this is at the block level
+  filter(flor!=0)%>%
+  filter(!is.na(species))%>%
+  group_by(morphospecies, species)%>%
+  mutate(attractiveness=abundance/flor)%>%
+  filter(!is.na(attractiveness))%>%
+  summarize(meanattractiveness=mean(attractiveness))
+
+#viz
+ggplot(attindex_block, aes(x=morphospecies, y=meanattractiveness)) +
+  geom_jitter(aes(color=species), width=.1)+
+  scale_y_continuous(trans='log10')
+
+attindex_orchard<-full_join(phenflorsum0, op_spread) %>%
+  spread(morphospecies, abundance, fill=0) %>%
+  gather(morphospecies, abundance, 7:19)%>%
+  mutate(abundance=ifelse(is.na(abundance), 0, abundance)) %>%
+  mutate(flor=ifelse(is.na(flor), 0, flor)) %>%
+  select(-6, -7)%>%
+  group_by(orchard_age, species, morphospecies)%>%
+  summarize(abundance=sum(abundance), flor=sum(flor)) %>%#this is at the block level
+  filter(flor!=0)%>%
+  filter(!is.na(species))%>%
+  group_by(morphospecies, species)%>%
+  mutate(attractiveness=abundance/flor)%>%
+  filter(!is.na(attractiveness))%>%
+  summarize(meanattractiveness=mean(attractiveness)) #this is at the block level
+
+#viz
+ggplot(attindex_orchard, aes(x=morphospecies, y=meanattractiveness)) +
+  geom_jitter(aes(color=species), width=.1)+
+  scale_y_continuous(trans='log10')
+
+attindex_all<-full_join(phenflorsum0, op_spread) %>%
+  spread(morphospecies, abundance, fill=0) %>%
+  gather(morphospecies, abundance, 7:19)%>%
+  mutate(abundance=ifelse(is.na(abundance), 0, abundance)) %>%
+  mutate(flor=ifelse(is.na(flor), 0, flor)) %>%
+  select(-6, -7)%>%
+  group_by(species, morphospecies)%>%
+  summarize(abundance=sum(abundance), flor=sum(flor)) %>%#this is at the block level
+  filter(flor!=0)%>%
+  filter(!is.na(species))%>%
+  group_by(morphospecies, species)%>%
+  mutate(attractiveness=abundance/flor)%>%
+  filter(!is.na(attractiveness))%>%
+  summarize(meanattractiveness=mean(attractiveness)) #across the whole thing
+
+#viz
+ggplot(attindex_all, aes(x=morphospecies, y=meanattractiveness)) +
+  geom_jitter(aes(color=species), width=.1)+
+  scale_y_continuous(trans='log10')
+
+
 
 ## attractiveness index = # pollinator visits for each morphospecies / # flowers
 ## ^^ pollinators and flowers are both per seed mix per management plot summed over all time
@@ -171,8 +263,13 @@ attindex0 <- attindex%>%
 #############
 ##TO DO 3/24/2022:
   ##Change plant species names to species codes in observed pollinator dataset
+    #DONE
   ##Add zeroes to observed pollinator dataset (use spread function to add '0' to management plots
+    #DONE
   ##with no pollinator observations)
-  ##Re-join plant floral count data and observed pollinator data, fill in zeroes, and re-calculate 
+  ##Re-join plant floral count data and observed pollinator data, fill in zeroes, and re-calculate
+    #DONE
   ##attractiveness index for each plant species
+    #Did this at a few different levels of aggregation, it looks sorta consistent, and the numbers are waaay lower than before. (.1 to .0001)
+  ## do you want to still try with cover? 
   
