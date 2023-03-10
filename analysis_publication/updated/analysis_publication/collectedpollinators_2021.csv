@@ -1,0 +1,370 @@
+Day,Month,Orchard Age,Block,Management,Seed Mix,Host Plant,Order,Genus,Notes,Count
+22,april,60,2,no management,perennial,geum,Coleoptera,Coleoptera,,1
+22,april,60,2,no management,perennial,geum,Hymenoptera,Lasioglossum,,1
+22,april,60,2,flail,perennial,geum,Coleoptera,Coleoptera,,1
+22,april,60,2,flail,perennial,geum,Coleoptera,Coleoptera,,1
+22,april,60,3,flail,perennial,geum,Hymenoptera,Osmia,,1
+22,april,60,3,flail,perennial,geum,Coleoptera,Coleoptera,,1
+22,april,60,4,no management,perennial,geum,Hymenoptera,Lasioglossum,,1
+22,april,60,4,flailscrape,perennial,geum,Hymenoptera,Lasioglossum,,1
+22,april,60,4,flailscrape,perennial,geum,Hymenoptera,Lasioglossum,,1
+22,april,60,5,no management,perennial,geum,Hymenoptera,Panurginus,,1
+22,april,60,5,no management,megamix,geum,Coleoptera,Coleoptera,,1
+22,april,60,6,no management,perennial,geum,Coleoptera,Coleoptera,,1
+29,april,40,3,no management,perennial,geum,Diptera,Eupeodes,,1
+29,april,40,3,no management,perennial,geum,Diptera,Diptera,,1
+29,april,40,3,no management,perennial,geum,Hymenoptera,Lasioglossum,,1
+29,april,40,4,no management,perennial,geum,Hymenoptera,Lasioglossum,,1
+29,april,15,1,flail,control,weed,Diptera,Eupeodes,Cardamine,1
+29,april,15,2,flailscrape,perennial,lomatium,Diptera,Diptera,,1
+29,april,15,2,flail,annual,weed,Hymenoptera,Panurginus,Lamium,1
+29,april,15,2,flail,perennial,weed,Hymenoptera,Panurginus,Cerastium,1
+29,april,15,3,flail,perennial,plectritis,Diptera,Diptera,,1
+29,april,15,3,flailscrape,perennial,weed,Diptera,Eupeodes,Veronica,1
+29,april,15,4,no management,annual,weed,Hymenoptera,Ceratina,Cardamine,1
+29,april,15,4,no management,annual,weed,Hymenoptera,Ceratina,Cardamine,1
+29,april,15,4,no management,annual,weed,Hymenoptera,Panurginus,Cardamine,1
+29,april,15,4,flail,annual,weed,Hymenoptera,Ceratina,Veronica,1
+29,april,15,4,flail,annual,weed,Hymenoptera,Panurginus,Veronica,1
+29,april,15,4,flailscrape,annual,weed,Hymenoptera,Ceratina,Lamium,1
+29,april,15,4,flailscrape,perennial,weed,Diptera,Diptera,Cardamine,1
+29,april,15,4,flailscrape,annual,weed,Hymenoptera,Panurginus,Cardamine,1
+29,april,15,4,flailscrape,annual,weed,Hymenoptera,Panurginus,Asteraceae,1
+29,april,15,4,flailscrape,perennial,weed,Hymenoptera,Ceratina,Veronica,1
+29,april,15,4,flailscrape,control,weed,Diptera,Diptera,Cerastium,1
+29,april,15,4,flail,perennial,weed,Diptera,Diptera,Veronica,1
+29,april,15,4,flail,industry,weed,Diptera,Diptera,Asteraceae,1
+29,april,15,4,flail,industry,weed,Diptera,Diptera,Asteraceae,1
+29,april,15,4,flail,perennial,weed,Hymenoptera,Ceratina,Veronica,1
+29,april,15,5,flail,perennial,weed,Hymenoptera,Ceratina,Cerastium,1
+29,april,15,5,flail,perennial,weed,Hymenoptera,Ceratina,Cerastium,1
+29,april,15,5,flail,annual,weed,Hymenoptera,Ceratina,Cardamine,1
+29,april,15,5,flail,perennial,weed,Hymenoptera,Ceratina,Cardamine,1
+29,april,15,5,flailscrape,annual,weed,Hymenoptera,Ceratina,Cardamine,1
+29,april,15,5,no management,perennial,weed,Diptera,Eupeodes,Veronica,1
+29,april,15,5,flailscrape,perennial,weed,Hymenoptera,Ceratina,Veronica,1
+29,april,15,5,no management,industry,weed,Hymenoptera,Ceratina,Veronica,1
+29,april,15,5,flail,control,weed,Hymenoptera,Ceratina,Cerastium,1
+29,april,15,5,flail,control,weed,Hymenoptera,Panurginus,Cerastium,1
+29,april,15,5,flail,control,weed,Hymenoptera,Ceratina,Cerastium,1
+29,april,15,5,flail,control,weed,Hymenoptera,Ceratina,Cerastium,1
+29,april,15,5,flail,control,weed,Hymenoptera,Panurginus,Cerastium,1
+29,april,15,6,no management,annual,plectritis,Hymenoptera,Ceratina,,1
+29,april,15,6,no management,annual,plectritis,Hymenoptera,Ceratina,,1
+29,april,15,6,no management,annual,plectritis,Hymenoptera,Osmia,,1
+29,april,15,6,flailscrape,perennial,weed,Hymenoptera,Ceratina,Cardamine,1
+29,april,15,6,flailscrape,perennial,weed,Hymenoptera,Panurginus,Cardamine,1
+29,april,15,6,flailscrape,annual,plectritis,Hymenoptera,Eucera,,1
+29,april,15,6,flailscrape,annual,plectritis,Hymenoptera,Ceratina,,1
+29,april,15,6,flailscrape,annual,plectritis,Hymenoptera,Ceratina,,1
+29,april,15,6,flailscrape,annual,plectritis,Hymenoptera,Ceratina,,1
+29,april,15,6,no management,perennial,lomatium,Hymenoptera,Ceratina,,1
+29,april,15,6,no management,perennial,weed,Hymenoptera,Ceratina,Cerastium,1
+29,april,15,6,no management,perennial,weed,Hymenoptera,Ceratina,Cerastium,1
+29,april,15,6,flailscrape,control,weed,Diptera,Eupeodes,Veronica,1
+14,may,60,1,no management,megamix,geum,Diptera,Diptera,,1
+14,may,60,1,flail,perennial,geum,Hymenoptera,Lasioglossum,,1
+14,may,60,2,no management,megamix,geum,Dermaptera,Dermaptera,,1
+14,may,60,2,no management,megamix,geum,Dermaptera,Dermaptera,,1
+14,may,60,2,no management,megamix,geum,Diptera,Diptera,,1
+14,may,60,2,no management,megamix,geum,Hymenoptera,Andrena,,1
+14,may,60,2,no management,control,geum,Hymenoptera,Lasioglossum,,1
+14,may,60,2,no management,control,geum,Hymenoptera,Halictus,,1
+14,may,60,2,no management,control,geum,Hymenoptera,Lasioglossum,,1
+14,may,60,2,no management,control,geum,Hymenoptera,Hylaeus,,1
+14,may,60,2,no management,perennial,geum,Hymenoptera,Ceratina,,1
+14,may,60,2,no management,perennial,geum,Hymenoptera,Hylaeus,,1
+14,may,60,2,flailscrape,perennial,geum,Diptera,Eupeodes,,1
+14,may,60,3,flail,perennial,geum,Coleoptera,Coleoptera,,1
+14,may,60,3,flail,annual,geum,Hymenoptera,Osmia,,1
+14,may,60,3,flail,annual,geum,Hymenoptera,Ceratina,,1
+14,may,60,3,flailscrape,industry,geum,Hymenoptera,Lasioglossum,,1
+14,may,60,4,no management,megamix,geum,Hymenoptera,Ceratina,,1
+14,may,60,4,no management,annual,geum,Hymenoptera,Ceratina,,1
+14,may,60,4,flail,control,geum,Hymenoptera,Ceratina,,1
+14,may,60,4,flailscrape,perennial,geum,Hymenoptera,Ceratina,,1
+14,may,60,4,flailscrape,perennial,geum,Hymenoptera,Ceratina,,1
+14,may,60,4,flail,control,geum,Hymenoptera,Ceratina,,1
+14,may,60,4,flailscrape,perennial,geum,Hymenoptera,Lasioglossum,,1
+14,may,60,5,no management,megamix,geum,Hymenoptera,Ceratina,,1
+14,may,60,5,no management,perennial,geum,Hymenoptera,Hymenoptera,,1
+14,may,60,5,flailscrape,perennial,geum,Hymenoptera,Lasioglossum,,1
+14,may,60,5,flailscrape,perennial,geum,Hymenoptera,Panurginus,,1
+14,may,60,5,flailscrape,perennial,geum,Hymenoptera,Panurginus,,1
+14,may,60,6,no management,perennial,geum,Hymenoptera,Ceratina,,1
+14,may,60,6,no management,perennial,geum,Hymenoptera,Ceratina,,1
+14,may,60,6,flailscrape,perennial,geum,Hymenoptera,Ceratina,,1
+15,may,15,1,no management,perennial,lomatium,Hymenoptera,Panurginus,,1
+15,may,15,1,flail,industry,weed,Hymenoptera,Ceratina,,1
+15,may,15,1,flail,industry,weed,Hymenoptera,Ceratina,,1
+15,may,15,1,flailscrape,annual,plectritis,Diptera,Eupeodes,,1
+15,may,15,1,flailscrape,perennial,weed,Diptera,Eupeodes,,1
+15,may,15,1,flail,control,weed,Diptera,Eupeodes,,1
+15,may,15,2,no management,megamix,weed,Coleoptera,Coleoptera,Poaceae,1
+15,may,15,2,flailscrape,perennial,lomatium,Diptera,Diptera,,1
+15,may,15,2,flail,industry,weed,Diptera,Eupeodes,,1
+15,may,15,3,no management,perennial,plectritis,Diptera,Eupeodes,,1
+15,may,15,3,flail,perennial,weed,Diptera,Eupeodes,Cerastium,1
+15,may,15,4,flailscrape,industry,plectritis,Hymenoptera,Osmia,,1
+15,may,15,4,flailscrape,industry,plectritis,Hymenoptera,Ceratina,,1
+15,may,15,4,flail,control,weed,Diptera,Platycheirus,,1
+15,may,15,4,flail,perennial,achillea,Dermaptera,Dermaptera,,1
+15,may,15,4,no management,perennial,weed,Diptera,Eupeodes,Poaceae,1
+15,may,15,5,flailscrape,perennial,geum,Hymenoptera,Halictus,,1
+15,may,15,5,flail,annual,weed,Hymenoptera,Ceratina,,1
+15,may,15,5,no management,perennial,lomatium,Diptera,Diptera,,1
+15,may,15,6,flailscrape,annual,plectritis,Hymenoptera,Ceratina,,1
+15,may,15,6,flailscrape,annual,plectritis,Hymenoptera,Ceratina,,1
+15,may,15,6,flailscrape,annual,plectritis,Hymenoptera,Ceratina,,1
+15,may,15,6,flailscrape,annual,plectritis,Hymenoptera,Ceratina,,1
+15,may,15,6,flailscrape,annual,plectritis,Hymenoptera,Osmia,,1
+15,may,15,6,flailscrape,perennial,plectritis,Hymenoptera,Osmia,,1
+15,may,15,6,flailscrape,industry,plectritis,Hymenoptera,Ceratina,,1
+15,may,40,3,no management,megamix,geum,Hymenoptera,Lasioglossum,,1
+15,may,40,3,no management,perennial,geum,Hymenoptera,Ceratina,,1
+15,may,40,4,no management,annual,geum,Coleoptera,Coleoptera,,1
+15,may,40,4,no management,perennial,geum,Coleoptera,Coleoptera,,1
+24,june,15,1,flailscrape,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,1,flailscrape,perennial,achillea,Diptera,Syritta,,1
+24,june,15,1,flailscrape,perennial,achillea,Hymenoptera,Panurginus,,1
+24,june,15,1,flailscrape,perennial,achillea,Hymenoptera,Panurginus,,1
+24,june,15,1,flailscrape,perennial,achillea,Hymenoptera,Panurginus,,1
+24,june,15,1,flailscrape,perennial,achillea,Diptera,Eupeodes,,1
+24,june,15,1,flailscrape,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,1,flailscrape,control,prunella,Hymenoptera,Halictus,,1
+24,june,15,1,flailscrape,control,prunella,Hymenoptera,Ceratina,,1
+24,june,15,1,flailscrape,control,prunella,Hymenoptera,Hymenoptera,,1
+24,june,15,1,flail,control,eriophyllum,Diptera,Syritta,,1
+24,june,15,1,flail,control,eriophyllum,Diptera,Eupeodes,,1
+24,june,15,1,flail,perennial,achillea,Diptera,Eupeodes,,1
+24,june,15,1,flail,perennial,achillea,Hemiptera,Hemiptera,,1
+24,june,15,1,flail,industry,clover,Diptera,Eupeodes,,1
+24,june,15,1,flail,industry,clover,Hymenoptera,Osmia,,1
+24,june,15,1,no management,perennial,achillea,Hymenoptera,Panurginus,,1
+24,june,15,1,no management,perennial,eriophyllum,Hymenoptera,Ceratina,,1
+24,june,15,1,flailscrape,industry,prunella,Hymenoptera,Ceratina,,1
+24,june,15,1,no management,control,achillea,Diptera,Toxomerus,,1
+24,june,15,1,flailscrape,annual,weed,Hymenoptera,Lasioglossum,Raphanus,1
+24,june,15,1,flailscrape,annual,epilobium,Diptera,Eupeodes,,1
+24,june,15,1,flail,industry,prunella,Hymenoptera,Ceratina,,1
+24,june,15,1,flailscrape,control,prunella,Hymenoptera,Ceratina,,1
+24,june,15,1,no management,control,achillea,Diptera,Eupeodes,,1
+24,june,15,1,no management,megamix,prunella,Hymenoptera,Ceratina,,1
+24,june,15,1,no management,annual,gilia,Hymenoptera,Lasioglossum,,1
+24,june,15,1,no management,annual,gilia,Hymenoptera,Halictus,,1
+24,june,15,1,no management,megamix,achillea,Coleoptera,Coleoptera,,1
+24,june,15,1,no management,megamix,achillea,Diptera,Diptera,,1
+24,june,15,1,no management,megamix,achillea,Hymenoptera,Panurginus,,1
+24,june,15,1,flail,control,prunella,Hymenoptera,Bombus,,1
+24,june,15,1,flailscrape,annual,weed,Hymenoptera,Halictus,Polygonum,1
+24,june,15,2,flail,control,eriophyllum,Hymenoptera,Ceratina,,1
+24,june,15,2,flail,control,eriophyllum,Hymenoptera,Halictus,,1
+24,june,15,2,flailscrape,annual,weed,Hymenoptera,Halictus,Polygonum,1
+24,june,15,2,no management,megamix,epilobium,Hymenoptera,Eucera,,1
+24,june,15,2,no management,megamix,achillea,Diptera,Eupeodes,,1
+24,june,15,2,no management,megamix,achillea,Hymenoptera,Hylaeus,,1
+24,june,15,2,no management,megamix,achillea,Hemiptera,Hemiptera,,1
+24,june,15,2,no management,megamix,achillea,Diptera,Syritta,,1
+24,june,15,2,no management,control,achillea,Diptera,Eupeodes,,1
+24,june,15,2,no management,control,achillea,Hymenoptera,Lasioglossum,,1
+24,june,15,2,no management,control,eriophyllum,Hymenoptera,Ceratina,,1
+24,june,15,2,flail,industry,achillea,Diptera,Eupeodes,,1
+24,june,15,2,flail,industry,achillea,Hymenoptera,Halictus,,1
+24,june,15,2,flail,perennial,achillea,Hymenoptera,Lasioglossum,,1
+24,june,15,2,flail,perennial,achillea,Hymenoptera,Panurginus,,1
+24,june,15,2,flail,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,2,flail,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,2,flail,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,2,flail,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,2,flail,perennial,achillea,Hemiptera,Hemiptera,,1
+24,june,15,2,flailscrape,perennial,achillea,Hymenoptera,Panurginus,,1
+24,june,15,2,flailscrape,perennial,achillea,Hymenoptera,Panurginus,,1
+24,june,15,2,flailscrape,perennial,achillea,Hymenoptera,Panurginus,,1
+24,june,15,2,flailscrape,perennial,achillea,Hymenoptera,Panurginus,,1
+24,june,15,2,flailscrape,perennial,achillea,Hymenoptera,Lasioglossum,,1
+24,june,15,2,flailscrape,annual,gilia,Hymenoptera,Ceratina,,1
+24,june,15,2,flail,industry,clover,Hymenoptera,Ceratina,,1
+24,june,15,2,flail,control,prunella,Hymenoptera,Ceratina,,1
+24,june,15,2,flail,control,eriophyllum,Hymenoptera,Ceratina,,1
+24,june,15,2,no management,megamix,achillea,Diptera,Eupeodes,,1
+24,june,15,2,no management,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,2,no management,perennial,achillea,Hymenoptera,Lasioglossum,,1
+24,june,15,2,no management,perennial,achillea,Diptera,Sphaerophoria,,1
+24,june,15,2,no management,perennial,achillea,Hymenoptera,Halictus,,1
+24,june,15,2,no management,perennial,achillea,Hymenoptera,Hylaeus,,1
+24,june,15,2,no management,perennial,achillea,Hemiptera,Hemiptera,,1
+24,june,15,2,no management,annual,gilia,Hymenoptera,Ceratina,,1
+24,june,15,2,no management,annual,gilia,Hymenoptera,Ceratina,,1
+24,june,15,2,no management,perennial,achillea,Diptera,Diptera,,1
+24,june,15,2,flail,annual,epilobium,Hymenoptera,Ceratina,,1
+24,june,15,2,flailscrape,perennial,potentilla,Hymenoptera,Panurginus,,1
+24,june,15,2,flailscrape,annual,collomia,Hymenoptera,Lasioglossum,,1
+24,june,15,2,flailscrape,industry,prunella,Hymenoptera,Hymenoptera,,1
+24,june,15,2,flailscrape,industry,prunella,Hymenoptera,Lasioglossum,,1
+24,june,15,3,no management,perennial,clarkia,Hymenoptera,Ceratina,,1
+24,june,15,3,no management,perennial,achillea,Hemiptera,Hemiptera,,1
+24,june,15,3,no management,perennial,achillea,Hymenoptera,Nomada,,1
+24,june,15,3,no management,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,3,no management,perennial,achillea,Hymenoptera,Hylaeus,,1
+24,june,15,3,no management,megamix,achillea,Diptera,Eristalis,,1
+24,june,15,3,no management,megamix,achillea,Diptera,Eupeodes,,1
+24,june,15,3,no management,megamix,achillea,Hymenoptera,Hylaeus,,1
+24,june,15,3,no management,megamix,achillea,Diptera,Toxomerus,,1
+24,june,15,3,flail,perennial,achillea,Diptera,Diptera,,1
+24,june,15,3,flail,control,eriophyllum,Hymenoptera,Ceratina,,1
+24,june,15,3,flail,industry,gilia,Hymenoptera,Lasioglossum,,1
+24,june,15,3,flailscrape,perennial,achillea,Diptera,Toxomerus,,1
+24,june,15,3,flailscrape,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,3,no management,control,prunella,Hymenoptera,Ceratina,,1
+24,june,15,3,flail,industry,eriophyllum,Hemiptera,Hemiptera,,1
+24,june,15,3,no management,perennial,achillea,Diptera,Eupeodes,,1
+24,june,15,3,no management,perennial,achillea,Diptera,Diptera,,1
+24,june,15,4,flail,industry,clover,Hymenoptera,Osmia,,1
+24,june,15,4,flail,perennial,achillea,Hymenoptera,Hylaeus,,1
+24,june,15,4,flail,perennial,achillea,Hymenoptera,Andrena,,1
+24,june,15,4,flail,perennial,achillea,Hymenoptera,Ceratina,,1
+24,june,15,4,flail,control,prunella,Hymenoptera,Ceratina,,1
+25,june,15,4,no management,megamix,achillea,Diptera,Eupeodes,,1
+25,june,15,4,no management,control,prunella,Hymenoptera,Eucera,,1
+25,june,15,4,flailscrape,industry,prunella,Hymenoptera,Anthidium,,1
+25,june,15,4,no management,industry,achillea,Hymenoptera,Ceratina,,1
+25,june,15,4,no management,industry,eriophyllum,Hymenoptera,Ceratina,,1
+25,june,15,4,no management,industry,prunella,Hymenoptera,Ceratina,,1
+25,june,15,4,no management,megamix,prunella,Hymenoptera,Ashmeadiella,,1
+25,june,15,4,flailscrape,perennial,achillea,Hymenoptera,Lasioglossum,,1
+25,june,15,5,flailscrape,perennial,achillea,Diptera,Diptera,,1
+25,june,15,5,flailscrape,perennial,achillea,Hymenoptera,Ceratina,,1
+25,june,15,5,flailscrape,perennial,achillea,Hemiptera,Hemiptera,,1
+25,june,15,5,flailscrape,perennial,achillea,Hemiptera,Hemiptera,,1
+25,june,15,5,flailscrape,perennial,achillea,Hymenoptera,Lasioglossum,,1
+25,june,15,5,flailscrape,perennial,prunella,Hymenoptera,Lasioglossum,,1
+25,june,15,5,flailscrape,perennial,achillea,Hymenoptera,Hylaeus,,1
+25,june,15,5,flailscrape,perennial,achillea,Diptera,Sphaerophoria,,1
+25,june,15,5,flailscrape,industry,clover,Hymenoptera,Osmia,,1
+25,june,15,5,no management,perennial,achillea,Hymenoptera,Halictus,,1
+25,june,15,5,no management,perennial,achillea,Diptera,Diptera,,1
+25,june,15,5,no management,annual,epilobium,Hymenoptera,Ceratina,,1
+25,june,15,5,flail,perennial,achillea,Hymenoptera,Halictus,,1
+25,june,15,5,flail,perennial,achillea,Hymenoptera,Lasioglossum,,1
+25,june,15,5,flail,industry,weed,Hymenoptera,Ceratina,Brassicaceae,1
+25,june,15,5,flail,industry,weed,Coleoptera,Coleoptera,Brassicaceae,1
+25,june,15,5,flail,perennial,achillea,Hymenoptera,Andrena,,1
+25,june,15,6,flail,annual,achillea,Hemiptera,Hemiptera,,1
+25,june,15,6,flail,annual,achillea,Hymenoptera,Hymenoptera,,1
+25,june,15,6,flail,perennial,achillea,Hymenoptera,Lasioglossum,,1
+25,june,15,6,flail,perennial,achillea,Hemiptera,Hemiptera,,1
+25,june,15,6,flail,perennial,achillea,Hymenoptera,Lasioglossum,,1
+25,june,15,6,flail,perennial,achillea,Diptera,Diptera,,1
+25,june,15,6,flail,perennial,achillea,Hemiptera,Hemiptera,,1
+25,june,15,6,flail,control,prunella,Hymenoptera,Ceratina,,1
+25,june,15,6,flailscrape,perennial,achillea,Hymenoptera,Ceratina,,1
+25,june,15,6,flailscrape,perennial,achillea,Hymenoptera,Ceratina,,1
+25,june,15,6,flailscrape,annual,achillea,Hymenoptera,Ceratina,,1
+25,june,15,6,flailscrape,control,achillea,Hymenoptera,Hymenoptera,,1
+25,june,15,6,flailscrape,annual,achillea,Hymenoptera,Ceratina,,1
+25,june,15,6,no management,perennial,achillea,Hymenoptera,Lasioglossum,,1
+25,june,15,6,no management,perennial,achillea,Hymenoptera,Ceratina,,1
+24,june,40,3,no management,perennial,geum,Diptera,Eupeodes,,1
+24,june,40,3,no management,megamix,geum,Thysanoptera,Thysanoptera,,1
+24,june,40,6,no management,megamix,geum,Hymenoptera,Hymenoptera,,1
+25,june,60,1,flail,industry,clover,Hymenoptera,Osmia,,1
+25,june,60,1,flail,annual,gilia,Hymenoptera,Lasioglossum,,1
+25,june,60,1,no management,control,geum,Hymenoptera,Hylaeus,,1
+25,june,60,1,no management,perennial,epilobium,Hymenoptera,Lasioglossum,,1
+25,june,60,1,no management,annual,achillea,Coleoptera,Coleoptera,,1
+25,june,60,1,flail,annual,weed,Diptera,Toxomerus,Senecio,1
+25,june,60,2,no management,perennial,achillea,Hymenoptera,Halictus,,1
+25,june,60,2,no management,control,prunella,Hymenoptera,Lasioglossum,,1
+25,june,60,2,no management,control,achillea,Diptera,Sphaerophoria,,1
+25,june,60,2,flailscrape,perennial,achillea,Diptera,Syritta,,1
+25,june,60,2,flailscrape,perennial,achillea,Hymenoptera,Lasioglossum,,1
+25,june,60,2,flailscrape,perennial,achillea,Coleoptera,Coleoptera,,1
+25,june,60,2,flailscrape,control,achillea,Hymenoptera,Ashmeadiella,,1
+25,june,60,2,no management,industry,clarkia,Coleoptera,Coleoptera,,1
+25,june,60,2,no management,perennial,achillea,Hymenoptera,Andrena,,1
+25,june,60,2,no management,perennial,achillea,Hymenoptera,Halictus,,1
+25,june,60,2,no management,perennial,achillea,Hymenoptera,Hymenoptera,,1
+25,june,60,2,no management,annual,clarkia,Hymenoptera,Halictus,,1
+25,june,60,2,no management,annual,clarkia,Hymenoptera,Lasioglossum,,1
+25,june,60,2,no management,industry,clarkia,Hymenoptera,Heriades,,1
+25,june,60,2,no management,industry,clarkia,Hymenoptera,Halictus,,1
+25,june,60,3,flailscrape,perennial,achillea,Hymenoptera,Lasioglossum,,1
+25,june,15,5,no management,control,prunella,Hymenoptera,Bombus,,1
+25,june,15,4,no management,megamix,prunella,Hymenoptera,Bombus,,1
+25,june,60,3,flailscrape,perennial,achillea,Hymenoptera,Halictus,,1
+25,june,60,3,flailscrape,perennial,achillea,Hymenoptera,Halictus,,1
+25,june,60,3,flailscrape,perennial,achillea,Hymenoptera,Heriades,,1
+25,june,60,4,no management,control,weed,Hymenoptera,Ceratina,Lapsana,1
+25,june,60,4,no management,annual,weed,Hymenoptera,Hymenoptera,Lapsana,1
+25,june,60,4,no management,perennial,prunella,Hymenoptera,Ashmeadiella,,1
+25,june,60,4,no management,perennial,prunella,Hymenoptera,Ceratina,,1
+25,june,60,4,no management,perennial,achillea,Diptera,Diptera,,1
+25,june,60,4,no management,perennial,achillea,Hymenoptera,Lasioglossum,,1
+25,june,60,4,no management,perennial,weed,Diptera,Diptera,Lapsana,1
+25,june,60,4,flailscrape,perennial,geum,Hymenoptera,Ceratina,,1
+25,june,60,4,flailscrape,industry,weed,Hymenoptera,Lasioglossum,Lapsana,1
+25,june,60,4,flailscrape,control,weed,Hymenoptera,Lasioglossum,Lapsana,1
+25,june,60,4,flailscrape,control,weed,Hymenoptera,Hymenoptera,Lapsana,1
+25,june,60,4,flailscrape,control,weed,Hymenoptera,Ceratina,Lapsana,1
+25,june,60,5,flail,annual,gilia,Diptera,Eupeodes,,1
+25,june,60,5,flail,control,achillea,Coleoptera,Coleoptera,,1
+25,june,60,5,flail,perennial,eriophyllum,Hymenoptera,Ceratina,,1
+25,june,60,5,no management,annual,weed,Coleoptera,Coleoptera,,1
+25,june,60,5,flail,control,prunella,Hymenoptera,Anthidium,,1
+25,june,60,6,no management,perennial,geum,Thysanoptera,Thysanoptera,,1
+25,june,60,6,flail,perennial,weed,Diptera,Eupeodes,,1
+25,june,60,6,no management,megamix,geum,Coleoptera,Coleoptera,,1
+31,july,15,1,no management,control,achillea,Hymenoptera,Ceratina,,1
+31,july,15,1,no management,control,achillea,Hymenoptera,Lasioglossum,,1
+31,july,15,1,no management,control,achillea,Hemiptera,Hemiptera,,1
+31,july,15,1,no management,control,epilobium,Hymenoptera,Ceratina,,1
+31,july,15,1,no management,megamix,achillea,Hemiptera,Hemiptera,,1
+31,july,15,1,no management,megamix,achillea,Hymenoptera,Halictus,,1
+31,july,15,1,no management,megamix,achillea,Hymenoptera,Halictus,,1
+31,july,15,1,no management,megamix,epilobium,Hymenoptera,Ceratina,,1
+31,july,15,1,no management,perennial,achillea,Hymenoptera,Halictus,,1
+31,july,15,1,no management,annual,epilobium,Hymenoptera,Ceratina,,1
+31,july,15,1,no management,annual,epilobium,Hymenoptera,Ceratina,,1
+31,july,15,2,no management,megamix,achillea,Hymenoptera,Lasioglossum,,1
+31,july,15,2,no management,megamix,achillea,Hymenoptera,Lasioglossum,,1
+31,july,15,2,no management,megamix,achillea,Hymenoptera,Lasioglossum,,1
+31,july,15,2,no management,megamix,clarkia,Hymenoptera,Ceratina,,1
+31,july,15,2,no management,annual,clarkia,Hymenoptera,Ceratina,,1
+31,july,15,2,no management,annual,clarkia,Hymenoptera,Lasioglossum,,1
+31,july,15,2,no management,annual,achillea,Hymenoptera,Halictus,,1
+31,july,15,2,no management,control,achillea,Hemiptera,Hemiptera,,1
+31,july,15,2,no management,control,achillea,Hymenoptera,Halictus,,1
+31,july,15,2,no management,perennial,achillea,Hemiptera,Hemiptera,,1
+31,july,15,2,no management,perennial,achillea,Hymenoptera,Lasioglossum,,1
+31,july,15,2,no management,perennial,achillea,Hymenoptera,Lasioglossum,,1
+31,july,15,3,no management,megamix,achillea,Hemiptera,Hemiptera,,1
+31,july,15,3,no management,control,achillea,Diptera,Syritta,,1
+31,july,15,3,no management,perennial,achillea,Hymenoptera,Halictus,,1
+31,july,15,3,no management,perennial,achillea,Hemiptera,Hemiptera,,1
+31,july,15,4,no management,annual,epilobium,Hymenoptera,Ceratina,,1
+31,july,15,4,no management,annual,weed,Hymenoptera,Halictus,Polygonum,1
+31,july,15,4,no management,perennial,achillea,Diptera,Syritta,,1
+31,july,15,6,no management,perennial,achillea,Hemiptera,Hemiptera,,1
+31,july,40,1,no management,perennial,achillea,Hymenoptera,Lasioglossum,,1
+31,july,40,3,no management,megamix,geum,Thysanoptera,Thysanoptera,,1
+31,july,40,4,no management,perennial,achillea,Hemiptera,Hemiptera,,1
+31,july,40,6,no management,perennial,gilia,Hemiptera,Hemiptera,,1
+31,july,60,4,no management,annual,weed,Hemiptera,Hemiptera,Asteraceae,1
+31,july,60,4,no management,annual,weed,Hemiptera,Hemiptera,Asteraceae,1
+31,july,60,4,no management,annual,weed,Hemiptera,Hemiptera,Asteraceae,1
+31,july,60,4,no management,annual,weed,Hemiptera,Hemiptera,Asteraceae,1
+26,august,60,2,no management,annual,epilobium,Diptera,Eupeodes,,1
+26,august,15,1,no management,annual,epilobium,Hymenoptera,Ceratina,,1
+26,august,15,1,no management,annual,epilobium,Hymenoptera,Ceratina,,1
+26,august,15,2,no management,megamix,epilobium,Hymenoptera,Ceratina,,1
+26,august,15,2,no management,megamix,achillea,Hemiptera,Hemiptera,,1
+26,august,15,2,no management,megamix,achillea,Hemiptera,Hemiptera,,1
+26,august,15,2,no management,annual,epilobium,Hymenoptera,Ceratina,,1
+26,august,15,2,no management,annual,weed,Hymenoptera,Ceratina,Lapsana,1
+26,august,15,2,no management,annual,weed,Hymenoptera,Ceratina,Lapsana,1
+26,august,15,2,no management,control,epilobium,Hymenoptera,Ceratina,,1
+26,august,15,2,no management,control,epilobium,Hymenoptera,Ceratina,,1
+26,august,15,3,no management,annual,epilobium,Hymenoptera,Ceratina,,1
+26,august,15,3,no management,annual,epilobium,Hymenoptera,Lasioglossum,,1
+26,august,15,5,no management,megamix,weed,Hymenoptera,Lasioglossum,Asteraceae,1
+26,august,15,5,no management,megamix,weed,Hymenoptera,Halictus,Polygonum,1
